@@ -1,0 +1,29 @@
+[package]
+name = "rt-server"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "rtund"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+futures-util = "0.3"
+ipnet.workspace = true
+rt-proto = { path = "../rt-proto" }
+rt-routing = { path = "../rt-routing" }
+rt-tunnel = { path = "../rt-tunnel" }
+rand.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+socket2.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tokio-tungstenite = { workspace = true }
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[dev-dependencies]
+tempfile = "3"

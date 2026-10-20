@@ -1,0 +1,13 @@
+[Unit]
+Description=RTUN tray client
+After=graphical-session.target rt-clientd.service
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/rt-client-gui
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target

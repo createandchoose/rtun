@@ -1,0 +1,26 @@
+#!/usr/sbin/nft -f
+
+table inet rtun_base {
+    chain input {
+        type filter hook input priority 0; policy drop;
+        ct state established,related accept
+        iifname "lo" accept
+        ip protocol icmp accept
+        ip6 nexthdr ipv6-icmp accept
+        tcp dport 22 accept
+        tcp dport 80 accept
+        tcp dport 443 accept
+        udp dport 443 accept
+        iifname "rtun0" udp dport 53 accept
+        iifname "rtun0" tcp dport 53 accept
+    }
+
+    chain forward {
+        type filter hook forward priority 0; policy accept;
+        ct state established,related accept
+    }
+
+    chain output {
+        type filter hook output priority 0; policy accept;
+    }
+}

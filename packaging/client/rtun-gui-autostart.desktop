@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=RTUN
+Comment=VPN client with DPI-resistant transports
+Exec=rt-client-gui
+Icon=network-vpn
+Terminal=false
+Categories=Network;Security;
+X-GNOME-Autostart-enabled=true

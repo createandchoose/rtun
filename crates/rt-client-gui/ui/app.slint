@@ -1,0 +1,136 @@
+import { Button, VerticalBox, HorizontalBox, Switch, CheckBox } from "std-widgets.slint";
+
+export component AppWindow inherits Window {
+    title: "RTUN";
+    preferred-width: 460px;
+    preferred-height: 560px;
+    background: #12161f;
+
+    in property <string> status-text: "Отключено";
+    in property <string> endpoint-text: "—";
+    in property <string> transport-text: "—";
+    in property <string> rtt-text: "—";
+    in property <string> traffic-text: "0 B / 0 B";
+    in property <string> error-text: "";
+    in property <string> dns-text: "—";
+    in-out property <bool> kill-switch: true;
+    in-out property <bool> smart-routing: true;
+
+    callback connect-clicked();
+    callback disconnect-clicked();
+    callback kill-toggled(bool);
+    callback select-udp();
+    callback select-ws();
+
+    VerticalBox {
+        padding: 20px;
+        spacing: 14px;
+
+        Text {
+            text: "RTUN";
+            color: #e8eefc;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        Rectangle {
+            height: 1px;
+            background: #263044;
+        }
+
+        Text {
+            text: root.status-text;
+            color: #7ee787;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        HorizontalBox {
+            spacing: 12px;
+            Text { text: "Сервер"; color: #8b98ad; width: 110px; }
+            Text { text: root.endpoint-text; color: #e8eefc; }
+        }
+        HorizontalBox {
+            spacing: 12px;
+            Text { text: "Транспорт"; color: #8b98ad; width: 110px; }
+            Text { text: root.transport-text; color: #e8eefc; }
+        }
+        HorizontalBox {
+            spacing: 12px;
+            Text { text: "RTT"; color: #8b98ad; width: 110px; }
+            Text { text: root.rtt-text; color: #e8eefc; }
+        }
+        HorizontalBox {
+            spacing: 12px;
+            Text { text: "Трафик"; color: #8b98ad; width: 110px; }
+            Text { text: root.traffic-text; color: #e8eefc; }
+        }
+        HorizontalBox {
+            spacing: 12px;
+            Text { text: "DNS"; color: #8b98ad; width: 110px; }
+            Text { text: root.dns-text; color: #e8eefc; }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: #263044;
+        }
+
+        HorizontalBox {
+            spacing: 10px;
+            Button {
+                text: "Подключиться";
+                primary: true;
+                clicked => { root.connect-clicked(); }
+            }
+            Button {
+                text: "Отключиться";
+                clicked => { root.disconnect-clicked(); }
+            }
+        }
+
+        HorizontalBox {
+            spacing: 10px;
+            Button {
+                text: "UDP (obfs)";
+                clicked => { root.select-udp(); }
+            }
+            Button {
+                text: "WSS (резерв)";
+                clicked => { root.select-ws(); }
+            }
+        }
+
+        HorizontalBox {
+            spacing: 12px;
+            Text { text: "Kill switch"; color: #c7d2e5; }
+            Switch {
+                checked: root.kill-switch;
+                toggled => { root.kill-toggled(self.checked); }
+            }
+        }
+
+        HorizontalBox {
+            spacing: 12px;
+            Text { text: "Умная маршрутизация"; color: #c7d2e5; }
+            CheckBox {
+                checked: root.smart-routing;
+                enabled: false;
+            }
+        }
+
+        Text {
+            text: root.error-text;
+            color: #ff7b72;
+            wrap: word-wrap;
+            min-height: 40px;
+        }
+
+        Rectangle { vertical-stretch: 1; }
+        Text {
+            text: "D-Bus: org.rtun.Client1 · демон rt-clientd";
+            color: #5c6a82;
+            font-size: 12px;
+        }
+    }
+}

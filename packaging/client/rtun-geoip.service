@@ -1,0 +1,9 @@
+[Unit]
+Description=Refresh RTUN GeoIP data
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/rt-ctl geoip-update --config /etc/rtun/client.toml --data-dir /var/lib/rtun
+Nice=10

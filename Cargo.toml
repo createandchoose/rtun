@@ -1,0 +1,51 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/rt-proto",
+    "crates/rt-transport",
+    "crates/rt-tunnel",
+    "crates/rt-routing",
+    "crates/rt-dns",
+    "crates/rt-clientd",
+    "crates/rt-server",
+    "crates/rt-client-gui",
+    "crates/rt-ctl",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+license = "MIT"
+authors = ["RTUN contributors"]
+
+[workspace.dependencies]
+async-trait = "0.1"
+base64 = "0.22"
+boringtun = "0.7"
+bytes = "1"
+clap = { version = "4", features = ["derive", "env"] }
+hickory-proto = "0.26"
+idna = "1"
+ipnet = { version = "2", features = ["serde"] }
+ksni = "0.3"
+libc = "0.2"
+rand = "0.8"
+rand_core = { version = "0.6", features = ["getrandom"] }
+rtnetlink = "0.14"
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12", "logging"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+slint = { version = "1", default-features = false, features = ["compat-1-2", "backend-winit", "renderer-femtovg", "std"] }
+socket2 = "0.5"
+thiserror = "2"
+tokio = { version = "1", features = ["full"] }
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12", "logging"] }
+tokio-tungstenite = { version = "0.24", default-features = false, features = ["handshake"] }
+toml = "0.8"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+tun = { version = "0.8", features = ["async"] }
+x25519-dalek = { version = "2", features = ["static_secrets"] }
+zbus = { version = "5", default-features = false, features = ["tokio"] }
+zeroize = { version = "1", features = ["derive"] }

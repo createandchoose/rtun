@@ -1,0 +1,20 @@
+[package]
+name = "rt-dns"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+hickory-proto.workspace = true
+ipnet.workspace = true
+rt-proto = { path = "../rt-proto" }
+rt-routing = { path = "../rt-routing" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+async-trait.workspace = true
+tempfile = "3"

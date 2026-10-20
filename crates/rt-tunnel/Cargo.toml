@@ -1,0 +1,17 @@
+[package]
+name = "rt-tunnel"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+base64.workspace = true
+boringtun.workspace = true
+rand.workspace = true
+rt-proto = { path = "../rt-proto" }
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tun.workspace = true
+x25519-dalek.workspace = true
+zeroize.workspace = true

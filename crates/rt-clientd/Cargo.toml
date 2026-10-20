@@ -1,0 +1,30 @@
+[package]
+name = "rt-clientd"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "rt-clientd"
+path = "src/main.rs"
+
+[dependencies]
+async-trait.workspace = true
+clap.workspace = true
+ipnet.workspace = true
+rt-dns = { path = "../rt-dns" }
+rt-proto = { path = "../rt-proto" }
+rt-routing = { path = "../rt-routing" }
+rt-tunnel = { path = "../rt-tunnel" }
+rt-transport = { path = "../rt-transport" }
+rand.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+zbus.workspace = true
+
+[dev-dependencies]
+tempfile = "3"

@@ -1,0 +1,12 @@
+[Unit]
+Description=Weekly RTUN GeoIP refresh
+Documentation=man:systemd.timer(5)
+
+[Timer]
+OnCalendar=weekly
+RandomizedDelaySec=6h
+Persistent=true
+Unit=rtun-geoip.service
+
+[Install]
+WantedBy=timers.target

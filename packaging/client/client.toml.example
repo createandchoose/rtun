@@ -1,0 +1,40 @@
+[endpoint]
+host = "vpn.example.com"
+port = 443
+ws_path = "/ws"
+alpn = "http/1.1"
+
+[device]
+private_key = "<CLIENT_PRIVATE_KEY>"
+peer_public_key = "<SERVER_PUBLIC_KEY>"
+address_v4 = "10.66.0.2"
+address_v6 = "fd66:1::2"
+mtu_obfs = 1360
+mtu_ws = 1280
+persistent_keepalive = 25
+
+[obfs]
+h1 = 1
+h2 = 2
+h3 = 3
+h4 = 4
+padding_max = 8
+junk_count = 4
+junk_min = 80
+junk_max = 300
+junk_delay_min_ms = 5
+junk_delay_max_ms = 15
+
+[transports]
+priority = ["obfs-udp", "ws-tls"]
+
+[routing]
+direct_suffixes = ["ru", "рф", "xn--p1ai", "su", "moscow", "москва", "xn--80adxhks"]
+smart_routing = true
+
+[dns]
+listen = ["127.0.0.53:53", "127.0.0.1:53", "[::1]:53"]
+intercept_stub = true
+
+kill_switch = true
+log_level = "info"

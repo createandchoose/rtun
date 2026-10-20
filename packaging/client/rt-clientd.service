@@ -1,0 +1,36 @@
+[Unit]
+Description=RTUN privileged client daemon
+After=network-online.target systemd-resolved.service
+Wants=network-online.target
+Before=rt-client-gui.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/rt-clientd --config /etc/rtun/client.toml --auto-connect
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=2
+RuntimeDirectory=rtun
+RuntimeDirectoryMode=0750
+StateDirectory=rtun
+StateDirectoryMode=0750
+ConfigurationDirectory=rtun
+ConfigurationDirectoryMode=0750
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=no
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+ReadWritePaths=/run/rtun /var/lib/rtun /etc/rtun /etc/systemd/resolved.conf.d
+
+[Install]
+WantedBy=multi-user.target

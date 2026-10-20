@@ -1,0 +1,23 @@
+[package]
+name = "rt-client-gui"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "rt-client-gui"
+path = "src/main.rs"
+
+[dependencies]
+ksni.workspace = true
+rt-clientd = { path = "../rt-clientd" }
+rt-proto = { path = "../rt-proto" }
+serde_json.workspace = true
+slint.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+zbus.workspace = true
+
+[build-dependencies]
+slint-build = "1"
