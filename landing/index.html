@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RTUN · личный VPN на Rust</title>
+<meta name="description" content="RTUN · личный VPN на Rust для Ubuntu-клиента и Linux VPS. WireGuard внутри, два транспорта, умная маршрутизация и kill switch.">
+<style>
+  :root {
+    --bg: #000000;
+    --surface: #0a0a0a;
+    --surface-2: #111111;
+    --ink: #ededed;
+    --ink-2: #a1a1a1;
+    --ink-3: #6b6b6b;
+    --line: #1f1f1f;
+    --accent: #ffffff;
+    --ok: #0070f3;
+    --sans: "Geist", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; /* taste-skill-ignore: code samples only */
+    --wrap: 1120px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--ok); outline-offset: 3px; }
+  ::selection { background: var(--ink); color: var(--bg); }
+
+  .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 24px; }
+
+  /* Navigation */
+  .nav { position: sticky; top: 0; z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { font-weight: 600; font-size: 18px; letter-spacing: -.02em; display: flex; align-items: center; gap: 10px; }
+  .brand svg { width: 22px; height: 22px; }
+  .nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--ink-2); }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-cta { display: flex; gap: 10px; align-items: center; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 40px; padding: 0 16px; border-radius: 999px;
+    font-size: 14px; font-weight: 500; letter-spacing: -.01em;
+    transition: transform .15s ease, background-color .15s ease, color .15s ease;
+    cursor: pointer; border: 0;
+  }
+  .btn-light { background: var(--ink); color: var(--bg); }
+  .btn-light:hover { background: #ffffff; transform: translateY(-1px); }
+  .btn-dark { background: var(--surface-2); color: var(--ink); }
+  .btn-dark:hover { background: #1a1a1a; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-lg { height: 48px; padding: 0 22px; font-size: 15px; }
+
+  /* Hero */
+  .hero { padding: 120px 0 96px; text-align: center; }
+  .hero h1 {
+    font-size: clamp(44px, 7.4vw, 88px);
+    line-height: 1.02;
+    font-weight: 700;
+    letter-spacing: -.045em;
+    max-width: 14ch;
+    margin: 0 auto;
+  }
+  .hero p.lead {
+    margin: 28px auto 0;
+    max-width: 560px;
+    font-size: clamp(17px, 1.6vw, 20px);
+    color: var(--ink-2);
+  }
+  .hero .actions { margin-top: 40px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .hero-screen {
+    margin: 80px auto 0;
+    max-width: 960px;
+    background: var(--surface);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .hero-screen .bar { display: flex; gap: 8px; padding: 14px 18px; background: var(--surface-2); }
+  .hero-screen .bar i { width: 10px; height: 10px; border-radius: 50%; background: #2a2a2a; display: block; }
+  .term { padding: 28px 28px 32px; font-family: var(--mono); /* taste-skill-ignore: terminal mockup is literal code */ font-size: 14px; line-height: 1.8; color: var(--ink-2); overflow-x: auto; }
+  .term .p { color: var(--ink-3); }
+  .term .ok { color: #3291ff; }
+  .term .hl { color: var(--ink); }
+
+  /* Sections */
+  section { padding: 120px 0; }
+  .section-head { max-width: 720px; }
+  .section-head h2 {
+    font-size: clamp(32px, 4.4vw, 52px);
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -.035em;
+  }
+  .section-head p { margin-top: 18px; font-size: 18px; color: var(--ink-2); max-width: 600px; }
+
+  /* Feature grid */
+  .grid { margin-top: 64px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .card { background: var(--surface); border-radius: 12px; padding: 28px; transition: background-color .2s ease; }
+  .card:hover { background: var(--surface-2); }
+  .card h3 { font-size: 18px; font-weight: 600; letter-spacing: -.02em; }
+  .card p { margin-top: 10px; font-size: 15px; color: var(--ink-2); }
+  .card .tag { display: inline-block; margin-top: 18px; font-size: 13px; color: var(--ink-3); }
+
+  /* Routing */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 64px; }
+  .panel { background: var(--surface); border-radius: 12px; padding: 36px; }
+  .panel h3 { font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+  .panel ul { list-style: none; margin-top: 20px; }
+  .panel li { padding: 12px 0; font-size: 15px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 16px; }
+  .panel li b { color: var(--ink); font-weight: 500; }
+  .panel .dir { color: #3291ff; }
+  .panel .tun { color: var(--ink); }
+  .panel .k { font-size: 14px; color: var(--ink-3); }
+
+  /* Install */
+  .install { background: var(--surface); border-radius: 14px; padding: 40px; margin-top: 64px; }
+  .install h3 { font-size: 24px; font-weight: 600; letter-spacing: -.025em; }
+  .install p { margin-top: 10px; color: var(--ink-2); }
+  .steps { margin-top: 28px; display: grid; gap: 12px; }
+  pre.code {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 18px 20px;
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink);
+    overflow-x: auto;
+  }
+  pre.code .c { color: var(--ink-3); }
+
+  /* Security */
+  .sec-list { margin-top: 64px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .sec-list div { background: var(--surface); border-radius: 12px; padding: 28px; }
+  .sec-list h3 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+  .sec-list p { margin-top: 8px; font-size: 15px; color: var(--ink-2); }
+
+  /* Footer */
+  footer { padding: 72px 0 56px; color: var(--ink-3); font-size: 14px; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+  footer nav { display: flex; gap: 24px; }
+  footer nav a:hover { color: var(--ink); }
+
+  /* Motion: entrance, respects reduced motion */
+  .js .rise { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+  .js .rise.in { opacity: 1; transform: none; }
+
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+    .split { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    section { padding: 88px 0; }
+  }
+  @media (max-width: 620px) {
+    .grid, .sec-list { grid-template-columns: 1fr; }
+    .hero { padding: 80px 0 64px; }
+    .hero-screen { margin-top: 56px; }
+    .install { padding: 28px; }
+    .panel { padding: 28px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a href="#top" class="brand" aria-label="RTUN, на главную">
+      <svg viewBox="0 0 22 22" aria-hidden="true"><path d="M11 1 21 21H1Z" fill="currentColor"/></svg>
+      RTUN
+    </a>
+    <nav class="nav-links" aria-label="Основное">
+      <a href="#features">Возможности</a>
+      <a href="#routing">Маршрутизация</a>
+      <a href="#install">Установка</a>
+      <a href="#security">Безопасность</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-dark" href="#install">Установить</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap">
+      <h1 class="rise">Личный VPN, который проходит DPI</h1>
+      <p class="lead rise">RTUN на Rust: WireGuard внутри, два транспорта на выбор, российский трафик идёт напрямую, остальное через ваш VPS.</p>
+      <div class="actions rise">
+        <a class="btn btn-light btn-lg" href="#install">Начать установку</a>
+        <a class="btn btn-dark btn-lg" href="#features">Возможности</a>
+      </div>
+
+      <div class="hero-screen rise" aria-label="Пример запуска RTUN">
+        <div class="bar" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="term">
+          <div><span class="p">$</span> <span class="hl">sudo rt-ctl add-peer --name laptop --index 2</span></div>
+          <div class="ok">peer laptop added  ·  10.66.0.2  ·  fd66:1::2</div>
+          <div><span class="p">$</span> <span class="hl">rt-client-gui</span></div>
+          <div class="ok">transport  ws-tls  ·  handshake ok</div>
+          <div class="ok">routing    .ru .рф GeoIP-RU  →  direct</div>
+          <div class="ok">kill switch  armed before TUN</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features">
+    <div class="wrap">
+      <div class="section-head rise">
+        <h2>Два транспорта, один туннель</h2>
+        <p>Если один способ заблокирован, клиент переключается на другой без вашего участия. Проверки здоровья и защита от флаппинга не дают ему метаться между ними.</p>
+      </div>
+
+      <div class="grid">
+        <article class="card rise">
+          <h3>WireGuard внутри</h3>
+          <p>Шифрование на базе boringtun, ключи для каждого устройства и необязательный PSK.</p>
+          <span class="tag">boringtun 0.7</span>
+        </article>
+        <article class="card rise">
+          <h3>obfs-udp</h3>
+          <p>Случайные заголовки, padding и junk-пакеты в стиле AmneziaWG. Неверные пакеты молча отбрасываются.</p>
+          <span class="tag">UDP</span>
+        </article>
+        <article class="card rise">
+          <h3>ws-tls за nginx</h3>
+          <p>WebSocket поверх TLS 1.3, подпротокол rtun.v1 и статический сайт-приманка на том же домене.</p>
+          <span class="tag">WSS · HTTP/1.1 ALPN</span>
+        </article>
+        <article class="card rise">
+          <h3>Автопереключение</h3>
+          <p>Failover между транспортами по проверкам handshake, с антифлаппингом и настройками на каждую сеть.</p>
+          <span class="tag">Happy Eyeballs</span>
+        </article>
+        <article class="card rise">
+          <h3>Dual-stack</h3>
+          <p>Туннель 10.66.0.0/24 и fd66:1::/64, NAT44 и NAT66 на сервере.</p>
+          <span class="tag">IPv4 · IPv6</span>
+        </article>
+        <article class="card rise">
+          <h3>Kill switch</h3>
+          <p>Правила блокировки применяются до создания TUN-устройства и снимаются только после его удаления.</p>
+          <span class="tag">nftables</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Routing -->
+  <section id="routing">
+    <div class="wrap">
+      <div class="section-head rise">
+        <h2>Что идёт мимо туннеля, а что через него</h2>
+        <p>Домены .ru, .рф, .su и московские суффиксы, а также GeoIP-RU и локальная сеть идут напрямую. Всё остальное уходит на VPS.</p>
+      </div>
+
+      <div class="split">
+        <div class="panel rise">
+          <h3>Напрямую</h3>
+          <ul>
+            <li><span class="dir">Домены</span> <b>.ru · .рф · .su · .xn--p1ai</b></li>
+            <li><span class="dir">Москва</span> <b>московские суффиксы</b></li>
+            <li><span class="dir">GeoIP</span> <b>адреса RU</b></li>
+            <li><span class="dir">LAN</span> <b>локальная сеть</b></li>
+          </ul>
+        </div>
+        <div class="panel rise">
+          <h3>Через туннель</h3>
+          <ul>
+            <li><span class="tun">Всё остальное</span> <b>через VPS</b></li>
+            <li><span class="k">DNS</span> <b>127.0.0.53:53, split DNS</b></li>
+            <li><span class="k">Деградация</span> <b>режим только по GeoIP</b></li>
+            <li><span class="k">Обновление</span> <b>rt-ctl geoip-update</b></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Install -->
+  <section id="install">
+    <div class="wrap">
+      <div class="section-head rise">
+        <h2>Установка в несколько команд</h2>
+        <p>Сервер: Ubuntu VPS с доменом. Клиент — Ubuntu или другой Linux с GUI-окном и треем.</p>
+      </div>
+
+      <div class="install rise">
+        <h3>Сервер</h3>
+        <p>Нужен root и домен, указанный на IP VPS.</p>
+        <div class="steps">
+          <pre class="code"><span class="c"># сборка</span>
+cargo build --release
+
+<span class="c"># установка: nginx, systemd, nftables, decoy-сайт</span>
+sudo packaging/server/install.sh --domain vpn.example.com --email admin@example.com
+
+<span class="c"># устройство</span>
+sudo rt-ctl add-peer --peers-dir /etc/rtun/peers --name laptop --index 2 \
+  --server-config /etc/rtun/server.toml</pre>
+        </div>
+
+        <h3 style="margin-top:40px">Клиент</h3>
+        <p>Конфиг создаётся на сервере командой <code>rt-ctl gen-client</code>.</p>
+        <div class="steps">
+          <pre class="code"><span class="c"># сборка</span>
+cargo build --release
+
+<span class="c"># установка сервиса и polkit-политики</span>
+sudo packaging/client/install.sh --config ./client.toml
+
+<span class="c"># окно и трей</span>
+rt-client-gui</pre>
+        </div>
+
+        <div style="margin-top:32px; display:flex; gap:12px; flex-wrap:wrap">
+          <a class="btn btn-light" href="https://github.com/createandchoose/rtun#readme">Документация на GitHub</a>
+          <a class="btn btn-dark" href="https://github.com/createandchoose/rtun/blob/main/docs/threat-model.md">Модель угроз</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security -->
+  <section id="security">
+    <div class="wrap">
+      <div class="section-head rise">
+        <h2>Приватные ключи не покидают устройство</h2>
+        <p>Ключи пишутся с правами 0600 и не попадают в логи. Сервер хранит только публичные ключи. DNS-запросы и адреса назначения не логируются.</p>
+      </div>
+
+      <div class="sec-list">
+        <div class="rise">
+          <h3>Ключи</h3>
+          <p>Сервер знает только публичные ключи пиров. Приватные, только на клиенте, режим 0600.</p>
+        </div>
+        <div class="rise">
+          <h3>Логи</h3>
+          <p>DNS-запросы и адреса назначения не записываются. Логируются состояние и ошибки.</p>
+        </div>
+        <div class="rise">
+          <h3>Сайт-приманка</h3>
+          <p>Для ws-tls обязателен декой-сайт. Пакеты с неизвестным заголовком отбрасываются без ответа.</p>
+        </div>
+        <div class="rise">
+          <h3>Ответственность</h3>
+          <p>Пользователь сам соблюдает местное законодательство и правила провайдера.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>RTUN · MIT License · Rust</span>
+    <nav aria-label="Ссылки">
+      <a href="#features">Возможности</a>
+      <a href="#install">Установка</a>
+      <a href="#security">Безопасность</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  // Entrance animation: elements appear once, as they enter the viewport.
+  // .js is set only here, so without script all content stays visible.
+  if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('js');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.rise').forEach((el) => io.observe(el));
+  }
+</script>
+</body>
+</html>

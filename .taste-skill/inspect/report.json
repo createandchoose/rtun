@@ -1,0 +1,2073 @@
+{
+ "url": "landing/index.html",
+ "at": "2026-10-25T04:42:41.237Z",
+ "allow": [],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 6,
+   "filled": [
+    0.33,
+    0.39,
+    0.42,
+    0.25,
+    0.35,
+    0.31
+   ],
+   "motion": {
+    "elements": 21,
+    "css": 0,
+    "transitions": 21,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 5183,
+     "screens": 5.8,
+     "words": 419,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 1,
+     "sections": 5,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Личный VPN, который проходит DPI",
+     "words": 5,
+     "chars": 32,
+     "lines": 3,
+     "size": 88,
+     "vw": 6.1,
+     "font": "Geist",
+     "weight": 700,
+     "tracking": -0.045,
+     "leading": 1.02,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "center",
+     "position": "center",
+     "widthRatio": 0.49,
+     "top": 185,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Личный VPN, который проходит DPI",
+     "words": 5,
+     "lines": 3,
+     "size": 88,
+     "font": "Geist"
+    },
+    "headings": [
+     {
+      "text": "Личный VPN, который проходит DPI",
+      "words": 5,
+      "chars": 32,
+      "lines": 3,
+      "size": 88,
+      "vw": 6.1,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.045,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.49,
+      "top": 185,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Два транспорта, один туннель",
+      "words": 4,
+      "chars": 28,
+      "lines": 2,
+      "size": 52,
+      "vw": 3.6,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.035,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.5,
+      "top": 1211,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Что идёт мимо туннеля, а что через него",
+      "words": 8,
+      "chars": 39,
+      "lines": 2,
+      "size": 52,
+      "vw": 3.6,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.035,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.5,
+      "top": 2159,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Установка в несколько команд",
+      "words": 4,
+      "chars": 28,
+      "lines": 2,
+      "size": 52,
+      "vw": 3.6,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.035,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.5,
+      "top": 2972,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Приватные ключи не покидают устройство",
+      "words": 5,
+      "chars": 38,
+      "lines": 2,
+      "size": 52,
+      "vw": 3.6,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.035,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.5,
+      "top": 4340,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 5,
+     "maxLines": 3,
+     "over2Lines": 1,
+     "statements": 0,
+     "centered": 1,
+     "medianWords": 5,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Geist",
+       "share": 0.78,
+       "mono": false
+      },
+      {
+       "family": "Geist Mono",
+       "share": 0.21,
+       "mono": false
+      },
+      {
+       "family": "monospace",
+       "share": 0.01,
+       "mono": true
+      }
+     ],
+     "familyCount": 3,
+     "sizes": [
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      20,
+      22,
+      24,
+      52,
+      88
+     ],
+     "sizeCount": 11,
+     "notLoaded": [],
+     "body": {
+      "font": "Geist",
+      "size": 15,
+      "leading": 1.6,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 7.7
+     },
+     "measureChars": 67,
+     "max": {
+      "size": 88,
+      "vw": 6.1,
+      "font": "Geist",
+      "text": "Личный VPN, который проходит DPI"
+     },
+     "monoShare": 0.22,
+     "monoProseShare": 0.07,
+     "monoFamilies": [
+      "Geist Mono",
+      "monospace"
+     ],
+     "monoSamples": [
+      "$",
+      "sudo rt-ctl add-peer --name laptop --ind",
+      "peer laptop added · 10.66.0.2 · fd66:1::",
+      "$",
+      "rt-client-gui",
+      "transport ws-tls · handshake ok"
+     ],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.01,
+     "centerShare": 0.12,
+     "smallText": 0
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#000000",
+     "bodyBgHsl": {
+      "h": 0,
+      "s": 0,
+      "l": 0
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#0a0a0a",
+       "top": 3226,
+       "hsl": {
+        "h": 0,
+        "s": 0,
+        "l": 0.04
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#a1a1a1",
+       "share": 0.54
+      },
+      {
+       "color": "#ededed",
+       "share": 0.3
+      },
+      {
+       "color": "#6b6b6b",
+       "share": 0.09
+      },
+      {
+       "color": "#3291ff",
+       "share": 0.05
+      },
+      {
+       "color": "#000000",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#111111",
+      "hsl": {
+       "h": 0,
+       "s": 0,
+       "l": 0.07
+      },
+      "fg": "#ededed"
+     },
+     "lowContrast": [
+      {
+       "text": "boringtun 0.7",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "WSS · HTTP/1.1 ALPN",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "Happy Eyeballs",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "IPv4 · IPv6",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "nftables",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "Деградация",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 14,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      }
+     ]
+    },
+    "buttons": {
+     "count": 5,
+     "inHero": 3,
+     "radius": "pill",
+     "height": 40,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Установить",
+      "Начать установку",
+      "Возможности"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 1,
+     "hairlineSamples": [
+      "header.nav 1440px"
+     ],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 16,
+     "boxRadius": 12,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 6,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 1494
+      },
+      {
+       "count": 4,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 4622
+      }
+     ]
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 6,
+     "fixed": true,
+     "height": 65,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "pageH": 5183,
+    "margins": {
+     "left": 184,
+     "right": 220
+    },
+    "sections": [
+     {
+      "sel": "section.hero",
+      "tag": "section",
+      "top": 65,
+      "height": 1026,
+      "words": 59,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Личный VPN, который проходит DPI",
+       "size": 88,
+       "tag": "h1"
+      },
+      "left": 448,
+      "right": 448,
+      "textLeft": 448,
+      "textRight": 448,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "section#features",
+      "tag": "section",
+      "top": 1091,
+      "height": 948,
+      "words": 131,
+      "media": 0,
+      "middle": 71,
+      "heading": {
+       "text": "Два транспорта, один туннель",
+       "size": 52,
+       "tag": "h2"
+      },
+      "left": 184,
+      "right": 229,
+      "textLeft": 184,
+      "textRight": 229,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "section#routing",
+      "tag": "section",
+      "top": 2039,
+      "height": 813,
+      "words": 65,
+      "media": 0,
+      "middle": 145,
+      "heading": {
+       "text": "Что идёт мимо туннеля, а что через него",
+       "size": 52,
+       "tag": "h2"
+      },
+      "left": 184,
+      "right": 220,
+      "textLeft": 184,
+      "textRight": 220,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "section#install",
+      "tag": "section",
+      "top": 2852,
+      "height": 1367,
+      "words": 101,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Установка в несколько команд",
+       "size": 52,
+       "tag": "h2"
+      },
+      "left": 184,
+      "right": 557,
+      "textLeft": 184,
+      "textRight": 557,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "section#security",
+      "tag": "section",
+      "top": 4220,
+      "height": 813,
+      "words": 81,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Приватные ключи не покидают устройство",
+       "size": 52,
+       "tag": "h2"
+      },
+      "left": 184,
+      "right": 221,
+      "textLeft": 184,
+      "textRight": 221,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "footer",
+      "tag": "footer",
+      "top": 5033,
+      "height": 150,
+      "words": 9,
+      "media": 0,
+      "middle": 628,
+      "heading": null,
+      "left": 184,
+      "right": 184,
+      "textLeft": 184,
+      "textRight": 184,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Личный VPN, который проходит DPI",
+      "size": 88,
+      "top": 185,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 212,
+      "n": 9
+     },
+     {
+      "x": 184,
+      "n": 8
+     },
+     {
+      "x": 754,
+      "n": 5
+     },
+     {
+      "x": 573,
+      "n": 4
+     },
+     {
+      "x": 935,
+      "n": 4
+     },
+     {
+      "x": 224,
+      "n": 2
+     }
+    ],
+    "leftBlocks": 32,
+    "bodySize": 15,
+    "stage": false,
+    "explains": true,
+    "slivers": [],
+    "voidShare": 0.25,
+    "voidBox": {
+     "x": 0,
+     "y": 120,
+     "w": 420,
+     "h": 780
+    }
+   },
+   "app": null,
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 5,
+   "filled": [
+    0.35,
+    0.65,
+    0.66,
+    0.53,
+    0.37
+   ],
+   "motion": {
+    "elements": 21,
+    "css": 0,
+    "transitions": 21,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 5079,
+     "screens": 5,
+     "words": 415,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 1,
+     "sections": 5,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Личный VPN, который проходит DPI",
+     "words": 5,
+     "chars": 32,
+     "lines": 3,
+     "size": 56.8,
+     "vw": 7.4,
+     "font": "Geist",
+     "weight": 700,
+     "tracking": -0.045,
+     "leading": 1.02,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "center",
+     "position": "center",
+     "widthRatio": 0.6,
+     "top": 185,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Личный VPN, который проходит DPI",
+     "words": 5,
+     "lines": 3,
+     "size": 56.8,
+     "font": "Geist"
+    },
+    "headings": [
+     {
+      "text": "Личный VPN, который проходит DPI",
+      "words": 5,
+      "chars": 32,
+      "lines": 3,
+      "size": 56.8,
+      "vw": 7.4,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.045,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.6,
+      "top": 185,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Два транспорта, один туннель",
+      "words": 4,
+      "chars": 28,
+      "lines": 1,
+      "size": 33.8,
+      "vw": 4.4,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.035,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 1042,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Что идёт мимо туннеля, а что через него",
+      "words": 8,
+      "chars": 39,
+      "lines": 1,
+      "size": 33.8,
+      "vw": 4.4,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.035,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 2067,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Установка в несколько команд",
+      "words": 4,
+      "chars": 28,
+      "lines": 1,
+      "size": 33.8,
+      "vw": 4.4,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.035,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 3070,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Приватные ключи не покидают устройство",
+      "words": 5,
+      "chars": 38,
+      "lines": 1,
+      "size": 33.8,
+      "vw": 4.4,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.035,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 4297,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 5,
+     "maxLines": 3,
+     "over2Lines": 1,
+     "statements": 0,
+     "centered": 1,
+     "medianWords": 5,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Geist",
+       "share": 0.78,
+       "mono": false
+      },
+      {
+       "family": "Geist Mono",
+       "share": 0.22,
+       "mono": false
+      },
+      {
+       "family": "monospace",
+       "share": 0.01,
+       "mono": true
+      }
+     ],
+     "familyCount": 3,
+     "sizes": [
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      22,
+      24,
+      34,
+      57
+     ],
+     "sizeCount": 10,
+     "notLoaded": [],
+     "body": {
+      "font": "Geist",
+      "size": 15,
+      "leading": 1.6,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 7.7
+     },
+     "measureChars": 67,
+     "max": {
+      "size": 56.8,
+      "vw": 7.4,
+      "font": "Geist",
+      "text": "Личный VPN, который проходит DPI"
+     },
+     "monoShare": 0.22,
+     "monoProseShare": 0.07,
+     "monoFamilies": [
+      "Geist Mono",
+      "monospace"
+     ],
+     "monoSamples": [
+      "$",
+      "sudo rt-ctl add-peer --name laptop --ind",
+      "peer laptop added · 10.66.0.2 · fd66:1::",
+      "$",
+      "rt-client-gui",
+      "transport ws-tls · handshake ok"
+     ],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.01,
+     "centerShare": 0.13,
+     "smallText": 0
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#000000",
+     "bodyBgHsl": {
+      "h": 0,
+      "s": 0,
+      "l": 0
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#0a0a0a",
+       "top": 3247,
+       "hsl": {
+        "h": 0,
+        "s": 0,
+        "l": 0.04
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#a1a1a1",
+       "share": 0.54
+      },
+      {
+       "color": "#ededed",
+       "share": 0.3
+      },
+      {
+       "color": "#6b6b6b",
+       "share": 0.1
+      },
+      {
+       "color": "#3291ff",
+       "share": 0.05
+      },
+      {
+       "color": "#000000",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#111111",
+      "hsl": {
+       "h": 0,
+       "s": 0,
+       "l": 0.07
+      },
+      "fg": "#ededed"
+     },
+     "lowContrast": [
+      {
+       "text": "boringtun 0.7",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "WSS · HTTP/1.1 ALPN",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "Happy Eyeballs",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "IPv4 · IPv6",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "nftables",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "Деградация",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 14,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      }
+     ]
+    },
+    "buttons": {
+     "count": 5,
+     "inHero": 3,
+     "radius": "pill",
+     "height": 40,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Установить",
+      "Начать установку",
+      "Возможности"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 1,
+     "hairlineSamples": [
+      "header.nav 768px"
+     ],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 16,
+     "boxRadius": 12,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 6,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 1248
+      },
+      {
+       "count": 4,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 4502
+      }
+     ]
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 2,
+     "fixed": true,
+     "height": 65,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "pageH": 5079,
+    "margins": {
+     "left": 24,
+     "right": 60
+    },
+    "sections": [
+     {
+      "sel": "section.hero",
+      "tag": "section",
+      "top": 65,
+      "height": 889,
+      "words": 59,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Личный VPN, который проходит DPI",
+       "size": 57,
+       "tag": "h1"
+      },
+      "left": 105,
+      "right": 105,
+      "textLeft": 105,
+      "textRight": 105,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "section#features",
+      "tag": "section",
+      "top": 954,
+      "height": 1025,
+      "words": 131,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Два транспорта, один туннель",
+       "size": 34,
+       "tag": "h2"
+      },
+      "left": 24,
+      "right": 63,
+      "textLeft": 24,
+      "textRight": 63,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "section#routing",
+      "tag": "section",
+      "top": 1979,
+      "height": 1003,
+      "words": 65,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Что идёт мимо туннеля, а что через него",
+       "size": 34,
+       "tag": "h2"
+      },
+      "left": 24,
+      "right": 60,
+      "textLeft": 24,
+      "textRight": 60,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "section#install",
+      "tag": "section",
+      "top": 2982,
+      "height": 1226,
+      "words": 101,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Установка в несколько команд",
+       "size": 34,
+       "tag": "h2"
+      },
+      "left": 24,
+      "right": 64,
+      "textLeft": 24,
+      "textRight": 64,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "section#security",
+      "tag": "section",
+      "top": 4209,
+      "height": 720,
+      "words": 81,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Приватные ключи не покидают устройство",
+       "size": 34,
+       "tag": "h2"
+      },
+      "left": 24,
+      "right": 62,
+      "textLeft": 24,
+      "textRight": 62,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "footer",
+      "tag": "footer",
+      "top": 4928,
+      "height": 150,
+      "words": 9,
+      "media": 0,
+      "middle": 276,
+      "heading": null,
+      "left": 24,
+      "right": 24,
+      "textLeft": 24,
+      "textRight": 24,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Личный VPN, который проходит DPI",
+      "size": 57,
+      "top": 185,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 52,
+      "n": 12
+     },
+     {
+      "x": 418,
+      "n": 10
+     },
+     {
+      "x": 24,
+      "n": 8
+     },
+     {
+      "x": 64,
+      "n": 2
+     }
+    ],
+    "leftBlocks": 32,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": null,
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 8,
+   "filled": [
+    0.66,
+    0.61,
+    0.83,
+    0.57,
+    0.57,
+    0.71,
+    0.61,
+    0.59
+   ],
+   "motion": {
+    "elements": 21,
+    "css": 0,
+    "transitions": 21,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 6461,
+     "screens": 7.7,
+     "words": 415,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 1,
+     "sections": 5,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Личный VPN, который проходит DPI",
+     "words": 5,
+     "chars": 32,
+     "lines": 3,
+     "size": 44,
+     "vw": 11.3,
+     "font": "Geist",
+     "weight": 700,
+     "tracking": -0.045,
+     "leading": 1.02,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "center",
+     "position": "center",
+     "widthRatio": 0.88,
+     "top": 145,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Личный VPN, который проходит DPI",
+     "words": 5,
+     "lines": 3,
+     "size": 44,
+     "font": "Geist"
+    },
+    "headings": [
+     {
+      "text": "Личный VPN, который проходит DPI",
+      "words": 5,
+      "chars": 32,
+      "lines": 3,
+      "size": 44,
+      "vw": 11.3,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.045,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 145,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Два транспорта, один туннель",
+      "words": 4,
+      "chars": 28,
+      "lines": 2,
+      "size": 32,
+      "vw": 8.2,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.035,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 985,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Что идёт мимо туннеля, а что через него",
+      "words": 8,
+      "chars": 39,
+      "lines": 3,
+      "size": 32,
+      "vw": 8.2,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.035,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 2755,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Напрямую",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 22,
+      "vw": 5.6,
+      "font": "Geist",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1.6,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.73,
+      "top": 3086,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Через туннель",
+      "words": 2,
+      "chars": 13,
+      "lines": 1,
+      "size": 22,
+      "vw": 5.6,
+      "font": "Geist",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1.6,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.73,
+      "top": 3401,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Установка в несколько команд",
+      "words": 4,
+      "chars": 28,
+      "lines": 2,
+      "size": 32,
+      "vw": 8.2,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.035,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 3853,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Сервер",
+      "words": 1,
+      "chars": 6,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Geist",
+      "weight": 600,
+      "tracking": -0.025,
+      "leading": 1.6,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.73,
+      "top": 4119,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Клиент",
+      "words": 1,
+      "chars": 6,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Geist",
+      "weight": 600,
+      "tracking": -0.025,
+      "leading": 1.6,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.73,
+      "top": 4537,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Приватные ключи не покидают устройство",
+      "words": 5,
+      "chars": 38,
+      "lines": 2,
+      "size": 32,
+      "vw": 8.2,
+      "font": "Geist",
+      "weight": 700,
+      "tracking": -0.035,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 5220,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 9,
+     "maxLines": 3,
+     "over2Lines": 2,
+     "statements": 0,
+     "centered": 1,
+     "medianWords": 4,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Geist",
+       "share": 0.78,
+       "mono": false
+      },
+      {
+       "family": "Geist Mono",
+       "share": 0.22,
+       "mono": false
+      },
+      {
+       "family": "monospace",
+       "share": 0.01,
+       "mono": true
+      }
+     ],
+     "familyCount": 3,
+     "sizes": [
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      22,
+      24,
+      32,
+      44
+     ],
+     "sizeCount": 10,
+     "notLoaded": [],
+     "body": {
+      "font": "Geist",
+      "size": 15,
+      "leading": 1.6,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 7.7
+     },
+     "measureChars": 38,
+     "max": {
+      "size": 44,
+      "vw": 11.3,
+      "font": "Geist",
+      "text": "Личный VPN, который проходит DPI"
+     },
+     "monoShare": 0.22,
+     "monoProseShare": 0.07,
+     "monoFamilies": [
+      "Geist Mono",
+      "monospace"
+     ],
+     "monoSamples": [
+      "$",
+      "sudo rt-ctl add-peer --name laptop --ind",
+      "peer laptop added · 10.66.0.2 · fd66:1::",
+      "$",
+      "rt-client-gui",
+      "transport ws-tls · handshake ok"
+     ],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.01,
+     "centerShare": 0.13,
+     "smallText": 0
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#000000",
+     "bodyBgHsl": {
+      "h": 0,
+      "s": 0,
+      "l": 0
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#0a0a0a",
+       "top": 533,
+       "hsl": {
+        "h": 0,
+        "s": 0,
+        "l": 0.04
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#a1a1a1",
+       "share": 0.54
+      },
+      {
+       "color": "#ededed",
+       "share": 0.3
+      },
+      {
+       "color": "#6b6b6b",
+       "share": 0.1
+      },
+      {
+       "color": "#3291ff",
+       "share": 0.05
+      },
+      {
+       "color": "#000000",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#111111",
+      "hsl": {
+       "h": 0,
+       "s": 0,
+       "l": 0.07
+      },
+      "fg": "#ededed"
+     },
+     "lowContrast": [
+      {
+       "text": "boringtun 0.7",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "WSS · HTTP/1.1 ALPN",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "Happy Eyeballs",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "IPv4 · IPv6",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "nftables",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      },
+      {
+       "text": "Деградация",
+       "ratio": 3.7,
+       "need": 4.5,
+       "size": 14,
+       "fg": "#6b6b6b",
+       "bg": "#0a0a0a"
+      }
+     ]
+    },
+    "buttons": {
+     "count": 5,
+     "inHero": 3,
+     "radius": "pill",
+     "height": 40,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Установить",
+      "Начать установку",
+      "Возможности"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 1,
+     "hairlineSamples": [
+      "header.nav 390px"
+     ],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 16,
+     "boxRadius": 12,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 6,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 1281
+      },
+      {
+       "count": 4,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 5488
+      }
+     ]
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 2,
+     "fixed": true,
+     "height": 65,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "pageH": 6461,
+    "margins": {
+     "left": 24,
+     "right": 29
+    },
+    "sections": [
+     {
+      "sel": "section.hero",
+      "tag": "section",
+      "top": 65,
+      "height": 832,
+      "words": 59,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Личный VPN, который проходит DPI",
+       "size": 44,
+       "tag": "h1"
+      },
+      "left": 29,
+      "right": 29,
+      "textLeft": 29,
+      "textRight": 29,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "section#features",
+      "tag": "section",
+      "top": 897,
+      "height": 1771,
+      "words": 131,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Два транспорта, один туннель",
+       "size": 32,
+       "tag": "h2"
+      },
+      "left": 24,
+      "right": 27,
+      "textLeft": 24,
+      "textRight": 27,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "section#routing",
+      "tag": "section",
+      "top": 2667,
+      "height": 1097,
+      "words": 65,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Что идёт мимо туннеля, а что через него",
+       "size": 32,
+       "tag": "h2"
+      },
+      "left": 24,
+      "right": 24,
+      "textLeft": 24,
+      "textRight": 24,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "section#install",
+      "tag": "section",
+      "top": 3765,
+      "height": 1367,
+      "words": 101,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Установка в несколько команд",
+       "size": 32,
+       "tag": "h2"
+      },
+      "left": 24,
+      "right": 32,
+      "textLeft": 24,
+      "textRight": 32,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "section#security",
+      "tag": "section",
+      "top": 5132,
+      "height": 1132,
+      "words": 81,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Приватные ключи не покидают устройство",
+       "size": 32,
+       "tag": "h2"
+      },
+      "left": 24,
+      "right": 36,
+      "textLeft": 24,
+      "textRight": 36,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "footer",
+      "tag": "footer",
+      "top": 6264,
+      "height": 197,
+      "words": 9,
+      "media": 0,
+      "middle": 24,
+      "heading": null,
+      "left": 24,
+      "right": 78,
+      "textLeft": 24,
+      "textRight": 78,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Личный VPN, который проходит DPI",
+      "size": 44,
+      "top": 145,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 52,
+      "n": 24
+     },
+     {
+      "x": 24,
+      "n": 8
+     }
+    ],
+    "leftBlocks": 32,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": null,
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "FAIL",
+   "id": "headline-lines",
+   "width": 1440,
+   "message": "1 headline(s) wrap past two lines at 1440px: \"Личный VPN, который проходит DPI\" → 3 lines (5 words, 88px)",
+   "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 36px or less."
+  },
+  {
+   "level": "FAIL",
+   "id": "mono",
+   "width": 1440,
+   "message": "Monospace type outside code: Geist Mono, monospace — e.g. \"$\", \"sudo rt-ctl add-peer --name laptop --ind\", \"peer laptop added · 10.66.0.2 · fd66:1::\", \"$\"",
+   "fix": "Set it in the text face. Monospace is for literal code inside <pre>/<code> only.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "hairline",
+   "width": 1440,
+   "message": "1 thin rule(s)/divider line(s): header.nav 1440px",
+   "fix": "Delete. Separate with space, a tone change, or scale. Lines are only for real tables and form fields.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "card-rows",
+   "width": 1440,
+   "message": "2 rows of identical boxed cards.",
+   "fix": "Vary the composition; not every section is a card grid.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "contrast",
+   "width": 1440,
+   "message": "Low-contrast text: \"boringtun 0.7\" 3.7:1 needs 4.5:1; \"WSS · HTTP/1.1 ALPN\" 3.7:1 needs 4.5:1; \"Happy Eyeballs\" 3.7:1 needs 4.5:1; \"IPv4 · IPv6\" 3.7:1 needs 4.5:1",
+   "fix": "Darken or lighten the text colour.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "size-count",
+   "width": 1440,
+   "message": "11 different font sizes (13, 14, 15, 16, 17, 18, 20, 22, 24, 52, 88).",
+   "fix": "A page needs about five: display, heading, lead, body, small.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "body-size",
+   "width": 1440,
+   "message": "Body text is 15px.",
+   "fix": "Body copy 16–20px.",
+   "alsoAt": [
+    768
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "few-pictures",
+   "width": 1440,
+   "message": "Only 0 picture(s) on the page (0 photographs, footage or raster images, 0 interface fragments). Drawings in SVG do not count.",
+   "fix": "Find real pictures of the subject's world with scripts/assets.mjs (photographs, archival images, maps, engravings, footage), download them to assets/ and give them room: a hero picture, one per section that has a subject, a full-width band. At least four, usually six to twelve."
+  },
+  {
+   "level": "WARN",
+   "id": "no-footage",
+   "width": 1440,
+   "message": "No video anywhere on the page.",
+   "fix": "Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject."
+  },
+  {
+   "level": "WARN",
+   "id": "off-centre",
+   "width": 1440,
+   "message": "The margins differ: 184px on the left, 220px on the right, at 1440px.",
+   "fix": "Put the navigation and the content on one pair of margins; check for padding on one side only, a scrollbar gutter, or a header on another inset than the page.",
+   "alsoAt": [
+    768
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "headline-lines",
+   "width": 768,
+   "message": "1 headline(s) wrap past two lines at 768px: \"Личный VPN, который проходит DPI\" → 3 lines (5 words, 56.8px)",
+   "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 32px or less."
+  },
+  {
+   "level": "FAIL",
+   "id": "headline-lines",
+   "width": 390,
+   "message": "2 headline(s) wrap past two lines at 390px: \"Личный VPN, который проходит DPI\" → 3 lines (5 words, 44px); \"Что идёт мимо туннеля, а что через него\" → 3 lines (8 words, 32px)",
+   "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 24px or less."
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "C:\\Users\\createandchoose\\Documents\\GitHub\\rtun\\.taste-skill\\inspect\\desktop-fold.jpg",
+   "pages": [
+    "C:\\Users\\createandchoose\\Documents\\GitHub\\rtun\\.taste-skill\\inspect\\desktop-page-01.jpg",
+    "C:\\Users\\createandchoose\\Documents\\GitHub\\rtun\\.taste-skill\\inspect\\desktop-page-02.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "C:\\Users\\createandchoose\\Documents\\GitHub\\rtun\\.taste-skill\\inspect\\tablet-fold.jpg",
+   "pages": [
+    "C:\\Users\\createandchoose\\Documents\\GitHub\\rtun\\.taste-skill\\inspect\\tablet-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "C:\\Users\\createandchoose\\Documents\\GitHub\\rtun\\.taste-skill\\inspect\\mobile-fold.jpg",
+   "pages": [
+    "C:\\Users\\createandchoose\\Documents\\GitHub\\rtun\\.taste-skill\\inspect\\mobile-page-01.jpg"
+   ],
+   "film": []
+  }
+ ]
+}

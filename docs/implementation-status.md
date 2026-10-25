@@ -24,6 +24,7 @@ packaging/deb/build-deb.sh        rtun-client_0.1.0_amd64.deb built
 | T5 GUI, D-Bus, packaging | implemented | Slint window, ksni tray, zbus + polkit, systemd units, `.deb` builder |
 | T6 performance/hardening/docs | partial | hardening, docs, audit; syscall batching and 24 h soak not measured |
 | T7 optional | extension points | `Transport` trait, config lists; QUIC/REALITY/multi-server/per-app not built |
+| Deploy tooling (wgconf, rt-deploy, rtun-manager) | partial | `wgconf` round-trip and unknown-key tests; rt-deploy pipeline on `MockRemote` (8 tests); rtun-manager profile tests (4). No SSH transport (`russh`/`RusshRemote` absent), `deploy` only validates input and returns an error. Not run on a real VPS; see `docs/deploy.md` |
 
 ## Not verifiable in this environment
 
