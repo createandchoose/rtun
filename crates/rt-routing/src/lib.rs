@@ -2,6 +2,7 @@ pub mod error;
 pub mod geoip;
 pub mod manager;
 pub mod nft;
+pub mod win;
 
 pub use error::{Result, RoutingError};
 pub use geoip::{parse_zone, GeoIpData};

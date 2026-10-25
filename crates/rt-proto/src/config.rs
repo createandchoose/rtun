@@ -860,15 +860,18 @@ impl PeerConfig {
 }
 
 pub fn write_secure(path: &Path, contents: &[u8]) -> Result<(), ConfigError> {
+    if let Some(parent) = path
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+    {
+        std::fs::create_dir_all(parent).map_err(|error| {
+            ConfigError::Invalid(format!("cannot create config directory: {error}"))
+        })?;
+    }
     #[cfg(unix)]
     {
         use std::io::Write;
         use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
-        if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent).map_err(|error| {
-                ConfigError::Invalid(format!("cannot create config directory: {error}"))
-            })?;
-        }
         let mut file = std::fs::OpenOptions::new()
             .create(true)
             .truncate(true)

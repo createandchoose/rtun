@@ -3,6 +3,7 @@ pub mod errors;
 pub mod keys;
 pub mod obfs;
 pub mod routing;
+pub mod wgconf;
 pub mod ws;
 
 pub use config::{

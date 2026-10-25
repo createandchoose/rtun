@@ -4054,6 +4054,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rt-deploy"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "rt-proto",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "rt-dns"
 version = "0.1.0"
 dependencies = [
@@ -4161,6 +4172,17 @@ dependencies = [
  "tun",
  "x25519-dalek",
  "zeroize",
+]
+
+[[package]]
+name = "rtun-manager"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "rt-deploy",
+ "rt-proto",
+ "serde",
+ "toml 0.8.23",
 ]
 
 [[package]]

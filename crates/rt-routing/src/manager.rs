@@ -12,6 +12,7 @@ use crate::nft::{
     cleanup_ip_commands, client_ip6_commands, client_ip_commands, client_nft, kill_switch_nft,
     plan_direct_routes, route_batch_lines, server_nft, set_add_command, ClientPlan, DirectRoute,
 };
+use crate::win::{self, PhysicalRoute, WinRoute};
 
 static FILE_COUNTER: AtomicU64 = AtomicU64::new(0);
 
@@ -82,6 +83,7 @@ pub struct RuleManager {
     state_path: PathBuf,
     run_dir: PathBuf,
     apply_lock: Mutex<()>,
+    win_routes: Mutex<Vec<WinRoute>>,
 }
 
 impl RuleManager {
@@ -95,6 +97,7 @@ impl RuleManager {
             state_path: state_path.into(),
             run_dir: run_dir.into(),
             apply_lock: Mutex::new(()),
+            win_routes: Mutex::new(Vec::new()),
         }
     }
 
@@ -203,6 +206,10 @@ impl RuleManager {
     }
 
     async fn cleanup_client_inner(&self, plan: &ClientPlan) {
+        if cfg!(windows) {
+            self.remove_windows_routes().await;
+            return;
+        }
         let _ = self
             .executor
             .run("nft", &strings(&["delete", "table", "inet", "rtun_ks"]))
@@ -223,6 +230,19 @@ impl RuleManager {
         v4: Ipv4Net,
         v6: Ipv6Net,
     ) -> Result<()> {
+        if cfg!(windows) {
+            win::run_with_retry(
+                self.executor.as_ref(),
+                &win::ipv4_address_args(tun_name, v4),
+            )
+            .await?;
+            win::run(
+                self.executor.as_ref(),
+                &win::ipv6_address_args(tun_name, v6),
+            )
+            .await?;
+            return win::run(self.executor.as_ref(), &win::mtu_args(tun_name, mtu)).await;
+        }
         self.run_checked(
             "ip",
             &strings(&[
@@ -254,6 +274,9 @@ impl RuleManager {
     }
 
     pub async fn set_link_mtu(&self, tun_name: &str, mtu: u16) -> Result<()> {
+        if cfg!(windows) {
+            return win::run(self.executor.as_ref(), &win::mtu_args(tun_name, mtu)).await;
+        }
         self.run_checked(
             "ip",
             &strings(&["link", "set", "dev", tun_name, "mtu", &mtu.to_string()]),
@@ -309,6 +332,12 @@ impl RuleManager {
 
     pub async fn apply_kill_switch(&self, plan: &ClientPlan) -> Result<()> {
         let _guard = self.apply_lock.lock().await;
+        if cfg!(windows) {
+            if plan.kill_switch {
+                tracing::warn!("kill switch is not implemented on Windows yet; traffic can leak while the tunnel is down");
+            }
+            return Ok(());
+        }
         if plan.kill_switch {
             self.apply_ruleset("rtun_ks", &kill_switch_nft(plan))
                 .await?;
@@ -325,6 +354,9 @@ impl RuleManager {
             mark: plan.mark,
             kill_switch: plan.kill_switch,
         })?;
+        if cfg!(windows) {
+            return Ok(());
+        }
         let result = async {
             self.apply_ruleset("rtun", &client_nft(plan)).await?;
             self.ip("ip", &client_ip_commands(plan)).await?;
@@ -345,8 +377,47 @@ impl RuleManager {
         gateway_v4: Option<std::net::Ipv4Addr>,
         gateway_v6: Option<std::net::Ipv6Addr>,
     ) -> Result<()> {
+        if cfg!(windows) {
+            return self.install_windows_routes(plan, dev, gateway_v4).await;
+        }
         let routes = plan_direct_routes(plan, dev, gateway_v4, gateway_v6);
         self.install_route_batches(&routes, plan.table_id).await
+    }
+
+    /// `dev` is the physical adapter index on Windows and the interface name elsewhere.
+    async fn install_windows_routes(
+        &self,
+        plan: &ClientPlan,
+        dev: &str,
+        gateway: Option<std::net::Ipv4Addr>,
+    ) -> Result<()> {
+        let index = dev
+            .parse::<u32>()
+            .map_err(|_| RoutingError::Config(format!("invalid adapter index {dev}")))?;
+        let physical = PhysicalRoute { index, gateway };
+        let mut added = Vec::new();
+        for route in win::route_plan(plan, &physical) {
+            match win::run(self.executor.as_ref(), &win::route_args("add", &route)).await {
+                Ok(()) => added.push(route),
+                Err(error) if win::is_tunnel_half(&route) => {
+                    *self.win_routes.lock().await = added.clone();
+                    self.remove_windows_routes().await;
+                    return Err(error);
+                }
+                Err(error) => {
+                    tracing::warn!(%error, net = %route.net, "cannot add route");
+                }
+            }
+        }
+        *self.win_routes.lock().await = added;
+        Ok(())
+    }
+
+    async fn remove_windows_routes(&self) {
+        let routes = std::mem::take(&mut *self.win_routes.lock().await);
+        for route in routes.iter().rev() {
+            let _ = win::run(self.executor.as_ref(), &win::route_args("delete", route)).await;
+        }
     }
 
     async fn install_route_batches(&self, routes: &[DirectRoute], table_id: u32) -> Result<()> {
@@ -676,6 +747,7 @@ mod tests {
         assert!(manager.state().unwrap().is_some());
     }
 
+    #[cfg(unix)]
     #[tokio::test]
     async fn failure_rolls_back_and_clears_state() {
         let dir = tempfile::tempdir().unwrap();
@@ -744,6 +816,34 @@ mod tests {
             .any(|content| content.contains("masquerade")));
     }
 
+    #[cfg(windows)]
+    #[tokio::test]
+    async fn windows_routes_are_installed_and_removed() {
+        let dir = tempfile::tempdir().unwrap();
+        let mock = Arc::new(MockExecutor::default());
+        let manager = RuleManager::new(
+            mock.clone(),
+            dir.path().join("state.json"),
+            dir.path().join("run"),
+        );
+        manager
+            .install_split_routes(&plan(), "7", Some("192.168.1.1".parse().unwrap()), None)
+            .await
+            .unwrap();
+        manager.cleanup_client(&plan()).await.unwrap();
+        let calls = mock.calls.lock().await;
+        let netsh = |action: &str| {
+            calls.iter().any(|(program, args)| {
+                program == "netsh"
+                    && args.contains(&action.to_string())
+                    && args.contains(&"prefix=0.0.0.0/1".to_string())
+            })
+        };
+        assert!(netsh("add"));
+        assert!(netsh("delete"));
+    }
+
+    #[cfg(unix)]
     #[tokio::test]
     async fn installs_split_route_batches() {
         let dir = tempfile::tempdir().unwrap();

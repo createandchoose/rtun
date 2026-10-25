@@ -65,6 +65,37 @@ impl ClientService {
     async fn restart(&self) -> fdo::Result<()> {
         self.start().await
     }
+
+    /// Makes `kind` the preferred transport and restarts a running session.
+    pub async fn apply_transport(&self, kind: &str) -> fdo::Result<()> {
+        let kind = match kind {
+            "obfs-udp" => TransportKind::ObfsUdp,
+            "ws-tls" => TransportKind::WsTls,
+            other => {
+                return Err(fdo::Error::InvalidArgs(format!(
+                    "unknown transport {other}"
+                )))
+            }
+        };
+        {
+            let mut config = self.config.lock().await;
+            config.transports.priority.retain(|value| *value != kind);
+            config.transports.priority.insert(0, kind);
+        }
+        self.restart().await
+    }
+
+    /// Stores the kill-switch flag and restarts a running session.
+    pub async fn apply_kill_switch(&self, enabled: bool) -> fdo::Result<()> {
+        {
+            let mut config = self.config.lock().await;
+            config.kill_switch = enabled;
+        }
+        if self.session.lock().await.is_some() {
+            self.restart().await?;
+        }
+        Ok(())
+    }
 }
 
 async fn authorize(connection: &Connection, header: &Header<'_>) -> fdo::Result<()> {
@@ -164,21 +195,7 @@ impl ClientService {
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<()> {
         authorize(connection, &header).await?;
-        let kind = match kind.as_str() {
-            "obfs-udp" => TransportKind::ObfsUdp,
-            "ws-tls" => TransportKind::WsTls,
-            other => {
-                return Err(fdo::Error::InvalidArgs(format!(
-                    "unknown transport {other}"
-                )))
-            }
-        };
-        {
-            let mut config = self.config.lock().await;
-            config.transports.priority.retain(|value| *value != kind);
-            config.transports.priority.insert(0, kind);
-        }
-        self.restart().await
+        self.apply_transport(&kind).await
     }
 
     #[zbus(name = "SetKillSwitch")]
@@ -189,14 +206,7 @@ impl ClientService {
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<()> {
         authorize(connection, &header).await?;
-        {
-            let mut config = self.config.lock().await;
-            config.kill_switch = enabled;
-        }
-        if self.session.lock().await.is_some() {
-            self.restart().await?;
-        }
-        Ok(())
+        self.apply_kill_switch(enabled).await
     }
 
     #[zbus(name = "ImportConfig")]

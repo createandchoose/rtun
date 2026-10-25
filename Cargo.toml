@@ -10,6 +10,8 @@ members = [
     "crates/rt-server",
     "crates/rt-client-gui",
     "crates/rt-ctl",
+    "crates/rt-deploy",
+    "crates/rtun-manager",
 ]
 
 [workspace.package]

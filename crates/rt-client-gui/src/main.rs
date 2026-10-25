@@ -1,5 +1,7 @@
 use ksni::menu::{MenuItem, StandardItem};
 use ksni::{Tray, TrayMethods};
+use rt_clientd::dbus::ClientService;
+use rt_clientd::engine::{default_paths, windows_state_dir};
 use rt_clientd::Status;
 use slint::{ComponentHandle, Weak};
 use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
@@ -154,11 +156,77 @@ fn main() -> Result<(), slint::PlatformError> {
         .worker_threads(2)
         .build()
         .expect("tokio runtime");
-    std::thread::spawn(move || {
-        runtime.block_on(control_loop(rx, weak, tray_tx));
+    let worker = std::thread::spawn(move || {
+        if cfg!(windows) {
+            runtime.block_on(control_loop_local(rx, weak));
+        } else {
+            runtime.block_on(control_loop(rx, weak, tray_tx));
+        }
     });
 
-    ui.run()
+    ui.run()?;
+    if cfg!(windows) {
+        // Closing the window tears the tunnel down; the daemon is not a
+        // separate service on Windows.
+        let _ = tx.send(Command::Quit);
+        let _ = worker.join();
+    }
+    Ok(())
+}
+
+/// Windows has no systemd daemon or D-Bus, so the engine runs in this process.
+/// The client must be started from an elevated (Administrator) session.
+async fn control_loop_local(mut rx: UnboundedReceiver<Command>, ui: Weak<AppWindow>) {
+    let path = windows_config_path();
+    let config = match rt_proto::ClientConfig::load(&path) {
+        Ok(config) => config,
+        Err(error) => {
+            update_ui(
+                &ui,
+                None,
+                Some(format!("Не удалось прочитать {}: {error}", path.display())),
+            );
+            while let Some(command) = rx.recv().await {
+                if matches!(command, Command::Quit) {
+                    break;
+                }
+            }
+            return;
+        }
+    };
+    let status = rt_clientd::new_status();
+    let service = ClientService::new(status.clone(), config, path, default_paths());
+    let mut ticker = tokio::time::interval(std::time::Duration::from_secs(1));
+    loop {
+        tokio::select! {
+            command = rx.recv() => {
+                let result = match command {
+                    None | Some(Command::Quit) => {
+                        service.stop().await.ok();
+                        break;
+                    }
+                    Some(Command::Connect) => service.start().await,
+                    Some(Command::Disconnect) => service.stop().await,
+                    Some(Command::SetTransport(kind)) => service.apply_transport(&kind).await,
+                    Some(Command::SetKillSwitch(enabled)) => service.apply_kill_switch(enabled).await,
+                };
+                if let Err(error) = result {
+                    update_ui(&ui, None, Some(error.to_string()));
+                }
+            }
+            _ = ticker.tick() => {
+                let snapshot = status.read().await.clone();
+                update_ui(&ui, Some(snapshot), None);
+            }
+        }
+    }
+}
+
+/// `RTUN_CONFIG` overrides the default `%APPDATA%\RTUN\client.toml`.
+fn windows_config_path() -> std::path::PathBuf {
+    std::env::var_os("RTUN_CONFIG")
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(|| windows_state_dir().join("client.toml"))
 }
 
 async fn control_loop(
