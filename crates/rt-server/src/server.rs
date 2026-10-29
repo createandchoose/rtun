@@ -440,9 +440,10 @@ async fn handle_ws(
                 .map(|value| value.split(',').any(|item| item.trim() == WS_SUBPROTOCOL))
                 .unwrap_or(false);
             if !offered {
-                return Err(ErrorResponse::new(Some(
-                    "rtun.v1 subprotocol required".to_string(),
-                )));
+                let mut error =
+                    ErrorResponse::new(Some("rtun.v1 subprotocol required".to_string()));
+                *error.status_mut() = tokio_tungstenite::tungstenite::http::StatusCode::BAD_REQUEST;
+                return Err(error);
             }
             response.headers_mut().insert(
                 "sec-websocket-protocol",
@@ -521,6 +522,26 @@ async fn handle_ws(
 mod tests {
     use super::*;
     use rt_proto::obfs::{build_wireguard_packet, WgKind};
+
+    #[tokio::test]
+    async fn missing_websocket_subprotocol_returns_bad_request() {
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let (tx, _rx) = mpsc::channel(1);
+        let server = tokio::spawn(async move {
+            let (stream, peer) = listener.accept().await.unwrap();
+            assert!(handle_ws(stream, peer, tx).await.is_err());
+        });
+        let mut client = TcpStream::connect(address).await.unwrap();
+        client.write_all(b"GET /ws HTTP/1.1\r\nHost: localhost\r\nConnection: Upgrade\r\nUpgrade: websocket\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n\r\n").await.unwrap();
+        let mut response = Vec::new();
+        tokio::time::timeout(Duration::from_secs(5), client.read_to_end(&mut response))
+            .await
+            .unwrap()
+            .unwrap();
+        assert!(response.starts_with(b"HTTP/1.1 400"));
+        server.await.unwrap();
+    }
 
     fn packet_v4(src: [u8; 4]) -> Vec<u8> {
         let mut packet = vec![0u8; 28];

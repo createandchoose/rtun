@@ -4,8 +4,8 @@
 
 - Ubuntu 22.04, 24.04 or newer, x86_64, kernel 6.2+.
 - Root access, public IPv4 and, preferably, public IPv6.
-- A DNS name such as `vpn.example.com` with both `A` and `AAAA` records
-  pointing at the VPS. The `ws-tls` transport and the decoy site need it; the
+- A DNS name such as `vpn.example.com` with an `A` record pointing at the VPS.
+  Add `AAAA` only when the VPS has working public IPv6. The `ws-tls` transport and the decoy site need it; the
   `obfs-udp` transport works without a domain.
 - Ports `443/tcp`, `443/udp`, `80/tcp` (ACME) and SSH open.
 - The VPS IP/AS must not already be blocked; test before relying on it.
@@ -21,17 +21,23 @@ sudo packaging/server/install.sh --domain vpn.example.com --email admin@example.
 
 The installer is idempotent. It:
 
-1. installs nginx, unbound, certbot and nftables;
+1. installs nginx, unbound, dns-root-data, certbot, nftables, iproute2 and procps;
 2. creates the `rtun` system user and `/etc/rtun`;
 3. generates `/etc/rtun/server.toml` with a fresh WireGuard key and random
    obfs headers when the file is absent;
 4. installs sysctls for IPv4/IPv6 forwarding and reverse-path filtering;
 5. installs the base firewall and loads it;
-6. installs `unbound` restricted to `10.66.0.1` and `fd66:1::1` with DNSSEC,
+6. seeds Unbound's writable DNSSEC root anchor from `dns-root-data` before
+   validating its configuration; installs `unbound` restricted to `10.66.0.1` and `fd66:1::1` with DNSSEC,
    qname minimisation and query logging disabled;
 7. installs the decoy site, an ACME HTTP vhost, requests a certificate and
    switches to the TLS vhost with `/ws` proxied to `127.0.0.1:9443`;
-8. enables and starts `rtund`.
+8. installs an nginx certificate renewal hook, enables and starts `rtund`,
+   waits for its WebSocket backend and checks all three services.
+
+Firewall rules in `rtun_base` are replaced atomically on reruns, without
+duplicating rules or replacing unrelated tables. The generated server keys
+and existing DNSSEC anchor are preserved.
 
 If you already have an nginx configuration, review
 `/etc/nginx/sites-available/rtun` after installation. The installer only
@@ -40,7 +46,7 @@ disables the default site and does not touch other vhosts.
 ## Add devices
 
 ```bash
-sudo rt-ctl add-peer --peers-dir /etc/rtun/peers --name laptop \
+sudo runuser -u rtun -- rt-ctl add-peer --peers-dir /etc/rtun/peers --name laptop \
   --index 2 --server-config /etc/rtun/server.toml
 ```
 
@@ -48,6 +54,8 @@ The command writes `/etc/rtun/peers/laptop.toml` (public key only), prints the
 client private key once and, with `--psk`, a preshared key. The `--index`
 selects the client address: IPv4 `10.66.0.<index>`, IPv6 `fd66:1::<index>`.
 Keep indices unique.
+Run this command as `rtun` so its mode-0600 peer file is readable by the daemon.
+The SSH deployment pipeline does this automatically and reloads the daemon.
 
 Reload peers without dropping existing sessions:
 
@@ -95,8 +103,9 @@ unauthenticated server reply by design, so active probes see silence.
 
 ## Certificates
 
-`certbot` installs a renewal timer. nginx reads the certificate on reload, so
-add a deploy hook:
+`certbot` installs a renewal timer. The installer also installs
+`/etc/letsencrypt/renewal-hooks/deploy/rtun-reload-nginx`, which validates and
+reloads nginx after renewal. For older installations, add a deploy hook:
 
 ```bash
 sudo tee /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh >/dev/null <<'EOF'
@@ -156,3 +165,24 @@ sudo nft delete table inet rtun_srv 2>/dev/null || true
 ```
 
 Review `/etc/nftables.conf` if the installer appended the include line.
+
+## Live tunnel regression check
+
+With a client TOML config for a registered peer, this optional test performs
+a real obfs UDP handshake, resolves `example.com` through the tunnel DNS,
+and queries `1.1.1.1` through the VPS NAT. It does not change local routes or DNS:
+
+```bash
+RTUN_LIVE_CONFIG=/path/to/client.toml cargo test -p rt-server --test live_server -- --ignored
+```
+
+The repaired installation and live tunnel check were verified on Ubuntu
+24.04, including a fresh container with real systemd and a second installer run.
+The container uses a self-signed test certificate; real ACME issuance was
+verified separately on the VPS. Reproduce on a Linux Docker host with:
+
+```bash
+bash tests/install/run.sh
+```
+
+Other supported releases still require separate installation tests.

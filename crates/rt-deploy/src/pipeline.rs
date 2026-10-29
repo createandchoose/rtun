@@ -287,13 +287,15 @@ async fn add_peer(plan: &DeployPlan, remote: &mut dyn Remote) -> Result<AddedPee
         remote,
         Step::Peer,
         &format!(
-            "rt-ctl add-peer --peers-dir {PEERS_DIR} --name {} --index {} --psk \
+            "runuser -u rtun -- rt-ctl add-peer --peers-dir {PEERS_DIR} --name {} --index {} --psk \
              --server-config {SERVER_CONFIG}",
             plan.peer_name, plan.peer_index
         ),
     )
     .await?;
-    parse_add_peer(&output.stdout)
+    let added = parse_add_peer(&output.stdout)?;
+    run(remote, Step::Peer, "systemctl reload rtund").await?;
+    Ok(added)
 }
 
 /// Разбирает вывод `rt-ctl add-peer`. Формат: строки `key: value`.
@@ -405,7 +407,8 @@ mod tests {
             generate_private_key(),
             generate_private_key(),
         );
-        remote.rule("rt-ctl add-peer", 0, &peer_out, "");
+        remote.rule("runuser -u rtun -- rt-ctl add-peer", 0, &peer_out, "");
+        remote.rule("systemctl reload rtund", 0, "", "");
         remote.rule("systemctl is-active", 0, "active\nactive\nactive\n", "");
         remote
             .files
@@ -435,6 +438,17 @@ mod tests {
         assert_eq!(result.client_conf.rtun.ws_path, "/ws");
         assert!(result.client_conf.peer.preshared_key.is_some());
         assert!(result.client_conf.into_client().is_ok());
+        let peer = remote
+            .commands
+            .iter()
+            .position(|cmd| cmd.starts_with("runuser -u rtun -- rt-ctl add-peer"))
+            .unwrap();
+        let reload = remote
+            .commands
+            .iter()
+            .position(|cmd| cmd == "systemctl reload rtund")
+            .unwrap();
+        assert!(peer < reload);
     }
 
     #[tokio::test]
@@ -501,6 +515,20 @@ mod tests {
         let error = deploy(&plan(), &mut remote, &mut |_| {}).await.unwrap_err();
         assert!(matches!(error, DeployError::PeerExists(name) if name == "laptop"));
         assert!(!remote.commands.iter().any(|cmd| cmd.contains("add-peer")));
+    }
+
+    #[tokio::test]
+    async fn peer_reload_failure_stops_deployment() {
+        let mut remote = happy_remote();
+        remote.rule_first("systemctl reload rtund", 1, "", "reload failed");
+        let error = deploy(&plan(), &mut remote, &mut |_| {}).await.unwrap_err();
+        assert!(matches!(
+            error,
+            DeployError::StepFailed {
+                step: Step::Peer,
+                ..
+            }
+        ));
     }
 
     #[tokio::test]
