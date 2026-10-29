@@ -34,10 +34,8 @@ if [[ -z "${DOMAIN}" ]]; then
   echo "--domain is required" >&2
   exit 2
 fi
-if [[ -z "${EMAIL}" ]]; then
-  echo "--email is required for Let's Encrypt" >&2
-  exit 2
-fi
+# Email необязателен: без него certbot регистрируется без адреса.
+# Уведомления о сроке действия тогда не придут, продление работает автоматически.
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
@@ -110,8 +108,13 @@ nginx -t
 systemctl reload nginx
 
 if [[ ! -f "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem" ]]; then
-  certbot certonly --webroot -w /var/www/rtun-decoy -d "${DOMAIN}" \
-    --non-interactive --agree-tos --email "${EMAIL}" --keep-until-expiring
+  if [[ -n "${EMAIL}" ]]; then
+    certbot certonly --webroot -w /var/www/rtun-decoy -d "${DOMAIN}" \
+      --non-interactive --agree-tos --email "${EMAIL}" --keep-until-expiring
+  else
+    certbot certonly --webroot -w /var/www/rtun-decoy -d "${DOMAIN}" \
+      --non-interactive --agree-tos --register-unsafely-without-email --keep-until-expiring
+  fi
 fi
 
 sed "s/__DOMAIN__/${DOMAIN}/g" "${ROOT_DIR}/packaging/server/nginx-rtun.conf.template" \

@@ -73,7 +73,7 @@ mod tests {
     #[test]
     fn rejects_too_many_datagrams() {
         let packet = [0u8; 4];
-        let result = encode_batch(std::iter::repeat(packet.as_slice()).take(33));
+        let result = encode_batch(std::iter::repeat_n(packet.as_slice(), 33));
         assert_eq!(result.unwrap_err(), WsFrameError::TooManyDatagrams);
     }
 

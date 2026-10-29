@@ -12,7 +12,7 @@
     --surface-2: #111111;
     --ink: #ededed;
     --ink-2: #a1a1a1;
-    --ink-3: #6b6b6b;
+    --ink-3: #8f8f8f;
     --line: #1f1f1f;
     --accent: #ffffff;
     --ok: #0070f3;
@@ -38,7 +38,7 @@
   .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 24px; }
 
   /* Navigation */
-  .nav { position: sticky; top: 0; z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .nav { position: sticky; top: 0; z-index: 10; background: var(--bg); }
   .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
   .brand { font-weight: 600; font-size: 18px; letter-spacing: -.02em; display: flex; align-items: center; gap: 10px; }
   .brand svg { width: 22px; height: 22px; }
@@ -63,16 +63,16 @@
   /* Hero */
   .hero { padding: 120px 0 96px; text-align: center; }
   .hero h1 {
-    font-size: clamp(44px, 7.4vw, 88px);
+    font-size: clamp(40px, 6.2vw, 76px);
     line-height: 1.02;
     font-weight: 700;
     letter-spacing: -.045em;
-    max-width: 14ch;
+    max-width: 20ch;
     margin: 0 auto;
   }
   .hero p.lead {
     margin: 28px auto 0;
-    max-width: 560px;
+    max-width: 620px;
     font-size: clamp(17px, 1.6vw, 20px);
     color: var(--ink-2);
   }
@@ -87,7 +87,7 @@
   }
   .hero-screen .bar { display: flex; gap: 8px; padding: 14px 18px; background: var(--surface-2); }
   .hero-screen .bar i { width: 10px; height: 10px; border-radius: 50%; background: #2a2a2a; display: block; }
-  .term { padding: 28px 28px 32px; font-family: var(--mono); /* taste-skill-ignore: terminal mockup is literal code */ font-size: 14px; line-height: 1.8; color: var(--ink-2); overflow-x: auto; }
+  .term { padding: 28px 28px 32px; font-family: var(--mono); /* taste-skill-ignore: literal terminal output */ font-size: 14px; line-height: 1.8; color: var(--ink-2); overflow-x: auto; white-space: pre; text-align: left; }
   .term .p { color: var(--ink-3); }
   .term .ok { color: #3291ff; }
   .term .hl { color: var(--ink); }
@@ -108,19 +108,19 @@
   .card { background: var(--surface); border-radius: 12px; padding: 28px; transition: background-color .2s ease; }
   .card:hover { background: var(--surface-2); }
   .card h3 { font-size: 18px; font-weight: 600; letter-spacing: -.02em; }
-  .card p { margin-top: 10px; font-size: 15px; color: var(--ink-2); }
-  .card .tag { display: inline-block; margin-top: 18px; font-size: 13px; color: var(--ink-3); }
+  .card p { margin-top: 10px; font-size: 16px; color: var(--ink-2); }
+  .card .tag { display: inline-block; margin-top: 18px; font-size: 14px; color: var(--ink-3); }
 
   /* Routing */
   .split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 64px; }
   .panel { background: var(--surface); border-radius: 12px; padding: 36px; }
   .panel h3 { font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
   .panel ul { list-style: none; margin-top: 20px; }
-  .panel li { padding: 12px 0; font-size: 15px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 16px; }
+  .panel li { padding: 12px 0; font-size: 16px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 16px; }
   .panel li b { color: var(--ink); font-weight: 500; }
   .panel .dir { color: #3291ff; }
   .panel .tun { color: var(--ink); }
-  .panel .k { font-size: 14px; color: var(--ink-3); }
+  .panel .k { font-size: 16px; color: var(--ink-3); }
 
   /* Install */
   .install { background: var(--surface); border-radius: 14px; padding: 40px; margin-top: 64px; }
@@ -143,7 +143,7 @@
   .sec-list { margin-top: 64px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .sec-list div { background: var(--surface); border-radius: 12px; padding: 28px; }
   .sec-list h3 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
-  .sec-list p { margin-top: 8px; font-size: 15px; color: var(--ink-2); }
+  .sec-list p { margin-top: 8px; font-size: 16px; color: var(--ink-2); }
 
   /* Footer */
   footer { padding: 72px 0 56px; color: var(--ink-3); font-size: 14px; }
@@ -162,6 +162,7 @@
     section { padding: 88px 0; }
   }
   @media (max-width: 620px) {
+    .hero h1 { font-size: 34px; max-width: none; }
     .grid, .sec-list { grid-template-columns: 1fr; }
     .hero { padding: 80px 0 64px; }
     .hero-screen { margin-top: 56px; }
@@ -198,7 +199,7 @@
   <!-- Hero -->
   <section class="hero">
     <div class="wrap">
-      <h1 class="rise">Личный VPN, который проходит DPI</h1>
+      <h1 class="rise">Личный VPN против DPI</h1>
       <p class="lead rise">RTUN на Rust: WireGuard внутри, два транспорта на выбор, российский трафик идёт напрямую, остальное через ваш VPS.</p>
       <div class="actions rise">
         <a class="btn btn-light btn-lg" href="#install">Начать установку</a>
@@ -207,14 +208,12 @@
 
       <div class="hero-screen rise" aria-label="Пример запуска RTUN">
         <div class="bar" aria-hidden="true"><i></i><i></i><i></i></div>
-        <div class="term">
-          <div><span class="p">$</span> <span class="hl">sudo rt-ctl add-peer --name laptop --index 2</span></div>
-          <div class="ok">peer laptop added  ·  10.66.0.2  ·  fd66:1::2</div>
-          <div><span class="p">$</span> <span class="hl">rt-client-gui</span></div>
-          <div class="ok">transport  ws-tls  ·  handshake ok</div>
-          <div class="ok">routing    .ru .рф GeoIP-RU  →  direct</div>
-          <div class="ok">kill switch  armed before TUN</div>
-        </div>
+        <pre class="term"><code><span class="p">$</span> <span class="hl">sudo rt-ctl add-peer --name laptop --index 2</span>
+<span class="ok">peer laptop added  ·  10.66.0.2  ·  fd66:1::2</span>
+<span class="p">$</span> <span class="hl">rt-client-gui</span>
+<span class="ok">transport  ws-tls  ·  handshake ok</span>
+<span class="ok">routing    .ru .рф GeoIP-RU  →  direct</span>
+<span class="ok">kill switch  armed before TUN</span></code></pre>
       </div>
     </div>
   </section>
@@ -266,7 +265,7 @@
   <section id="routing">
     <div class="wrap">
       <div class="section-head rise">
-        <h2>Что идёт мимо туннеля, а что через него</h2>
+        <h2>Что через туннель, а что нет</h2>
         <p>Домены .ru, .рф, .su и московские суффиксы, а также GeoIP-RU и локальная сеть идут напрямую. Всё остальное уходит на VPS.</p>
       </div>
 

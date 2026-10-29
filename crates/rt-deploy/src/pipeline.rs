@@ -74,7 +74,7 @@ struct AddedPeer {
 pub async fn deploy(
     plan: &DeployPlan,
     remote: &mut dyn Remote,
-    progress: &mut dyn FnMut(Step),
+    progress: &mut (dyn FnMut(Step) + Send),
 ) -> Result<DeployResult, DeployError> {
     validate_plan(plan)?;
 
@@ -111,7 +111,10 @@ pub fn validate_plan(plan: &DeployPlan) -> Result<(), DeployError> {
             plan.domain
         )));
     }
-    if !valid_token(&plan.email, &['@', '.', '_', '+', '-'], 254) || !plan.email.contains('@') {
+    // Пустой email допустим: certbot зарегистрируется без адреса.
+    if !plan.email.is_empty()
+        && (!valid_token(&plan.email, &['@', '.', '_', '+', '-'], 254) || !plan.email.contains('@'))
+    {
         return Err(DeployError::InvalidInput("email is not valid".into()));
     }
     if !valid_token(&plan.peer_name, &['_', '-'], 32) {
@@ -246,12 +249,17 @@ async fn upload(plan: &DeployPlan, remote: &mut dyn Remote) -> Result<(), Deploy
 }
 
 async fn install(plan: &DeployPlan, remote: &mut dyn Remote) -> Result<(), DeployError> {
+    let email_arg = if plan.email.is_empty() {
+        String::new()
+    } else {
+        format!(" --email {}", plan.email)
+    };
     run(
         remote,
         Step::Install,
         &format!(
-            "cd {REMOTE_ROOT} && bash packaging/server/install.sh --domain {} --email {}",
-            plan.domain, plan.email
+            "cd {REMOTE_ROOT} && bash packaging/server/install.sh --domain {}{email_arg}",
+            plan.domain
         ),
     )
     .await?;

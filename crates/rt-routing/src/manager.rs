@@ -667,6 +667,7 @@ mod tests {
     }
 
     impl MockExecutor {
+        #[allow(dead_code)]
         fn failing(program: &str, args: &str) -> Self {
             Self {
                 fail_program: Some(program.into()),

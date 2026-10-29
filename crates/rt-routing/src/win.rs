@@ -197,11 +197,16 @@ pub async fn run_with_retry(executor: &dyn CommandExecutor, args: &[String]) -> 
     Err(last.expect("at least one attempt"))
 }
 
-/// Finds the best physical IPv4 default route. The TUN adapter has no default
-/// route yet when this runs, so the result is the real network.
+/// Finds the best physical IPv4 default route. Only hardware adapters that are
+/// up are considered: other VPNs and TUN adapters (sing-tun, WireGuard, WSL)
+/// also install default routes, and taking one of them would send the tunnel's
+/// own traffic into that VPN.
 pub async fn detect_physical(executor: &dyn CommandExecutor) -> Option<PhysicalRoute> {
-    const SCRIPT: &str = "Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' \
-        | Where-Object { $_.NextHop -ne '0.0.0.0' } \
+    const SCRIPT: &str =
+        "$hw = Get-NetAdapter | Where-Object { $_.HardwareInterface -and $_.Status -eq 'Up' } \
+        | Select-Object -ExpandProperty ifIndex; \
+        Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' \
+        | Where-Object { $_.NextHop -ne '0.0.0.0' -and ($hw -contains $_.InterfaceIndex) } \
         | Sort-Object { $_.RouteMetric + $_.InterfaceMetric } \
         | Select-Object -First 1 \
         | ForEach-Object { '{0} {1}' -f $_.InterfaceIndex, $_.NextHop }";
