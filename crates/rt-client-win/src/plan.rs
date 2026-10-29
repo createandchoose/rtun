@@ -31,7 +31,7 @@ pub fn load_config(path: &Path) -> Result<ClientConfig, ClientWinError> {
 }
 
 /// План маршрутов: прямые префиксы, эндпоинт сервера, туннельная подсеть.
-/// GeoIP пока пустой: на Windows база RU-префиксов не загружается.
+/// The running client learns country/domain host routes through split DNS.
 pub fn build_plan(
     config: &ClientConfig,
     endpoints: &[SocketAddr],

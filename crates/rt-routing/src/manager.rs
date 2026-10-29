@@ -33,7 +33,10 @@ pub struct ProcessExecutor;
 #[async_trait]
 impl CommandExecutor for ProcessExecutor {
     async fn run(&self, program: &str, args: &[String]) -> Result<CommandOutput> {
-        let output = tokio::process::Command::new(program)
+        let mut command = tokio::process::Command::new(program);
+        #[cfg(windows)]
+        command.creation_flags(0x08000000); // CREATE_NO_WINDOW
+        let output = command
             .args(args)
             .output()
             .await
@@ -394,7 +397,11 @@ impl RuleManager {
         let index = dev
             .parse::<u32>()
             .map_err(|_| RoutingError::Config(format!("invalid adapter index {dev}")))?;
-        let physical = PhysicalRoute { index, gateway };
+        let physical = PhysicalRoute {
+            index,
+            gateway,
+            gateway_v6: None,
+        };
         let mut added = Vec::new();
         for route in win::route_plan(plan, &physical) {
             match win::run(self.executor.as_ref(), &win::route_args("add", &route)).await {

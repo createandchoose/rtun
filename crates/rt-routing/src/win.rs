@@ -23,6 +23,7 @@ const TUNNEL_HALVES_V6: [&str; 2] = ["::/1", "8000::/1"];
 pub struct PhysicalRoute {
     pub index: u32,
     pub gateway: Option<Ipv4Addr>,
+    pub gateway_v6: Option<Ipv6Addr>,
 }
 
 /// One route installed through `netsh`. `interface` is either the TUN adapter
@@ -52,6 +53,18 @@ pub fn route_plan(plan: &ClientPlan, physical: &PhysicalRoute) -> Vec<WinRoute> 
             });
         }
     }
+    if let Some(gateway) = physical.gateway_v6 {
+        for net in &plan.direct6 {
+            if net.addr().is_loopback() || net.addr().is_unspecified() {
+                continue;
+            }
+            routes.push(WinRoute {
+                net: *net,
+                nexthop: gateway.into(),
+                interface: physical.index.to_string(),
+            });
+        }
+    }
     // Link-local and multicast IPv6 must stay on the physical link; the
     // tunnel's `::/1` halves would otherwise capture them and the server drops them.
     for net in ["fe80::/10", "ff00::/8"] {
@@ -61,10 +74,14 @@ pub fn route_plan(plan: &ClientPlan, physical: &PhysicalRoute) -> Vec<WinRoute> 
             interface: physical.index.to_string(),
         });
     }
-    for net in &plan.override4 {
+    for net in plan.override4.iter().chain(&plan.override6) {
         routes.push(WinRoute {
             net: *net,
-            nexthop: IpAddr::V4(Ipv4Addr::UNSPECIFIED),
+            nexthop: if net.addr().is_ipv4() {
+                IpAddr::V4(Ipv4Addr::UNSPECIFIED)
+            } else {
+                IpAddr::V6(Ipv6Addr::UNSPECIFIED)
+            },
             interface: plan.tun_name.clone(),
         });
     }
@@ -209,7 +226,9 @@ pub async fn detect_physical(executor: &dyn CommandExecutor) -> Option<PhysicalR
         | Where-Object { $_.NextHop -ne '0.0.0.0' -and ($hw -contains $_.InterfaceIndex) } \
         | Sort-Object { $_.RouteMetric + $_.InterfaceMetric } \
         | Select-Object -First 1 \
-        | ForEach-Object { '{0} {1}' -f $_.InterfaceIndex, $_.NextHop }";
+        | ForEach-Object { $v6 = Get-NetRoute -AddressFamily IPv6 -DestinationPrefix '::/0' \
+          -InterfaceIndex $_.InterfaceIndex -ErrorAction SilentlyContinue | Sort-Object RouteMetric | Select-Object -First 1; \
+          '{0} {1} {2}' -f $_.InterfaceIndex, $_.NextHop, $v6.NextHop }";
     let output = executor
         .run(
             "powershell",
@@ -229,7 +248,14 @@ pub async fn detect_physical(executor: &dyn CommandExecutor) -> Option<PhysicalR
     let mut tokens = text.split_whitespace();
     let index = tokens.next()?.parse().ok()?;
     let gateway = tokens.next().and_then(|value| value.parse().ok());
-    Some(PhysicalRoute { index, gateway })
+    let gateway_v6 = tokens
+        .next()
+        .and_then(|value| value.split('%').next()?.parse().ok());
+    Some(PhysicalRoute {
+        index,
+        gateway,
+        gateway_v6,
+    })
 }
 
 #[cfg(test)]
@@ -264,6 +290,7 @@ mod tests {
         PhysicalRoute {
             index: 7,
             gateway: Some(Ipv4Addr::new(192, 168, 1, 1)),
+            gateway_v6: None,
         }
     }
 
@@ -299,6 +326,7 @@ mod tests {
         let physical = PhysicalRoute {
             index: 7,
             gateway: None,
+            gateway_v6: None,
         };
         let routes = route_plan(&plan(), &physical);
         assert!(routes

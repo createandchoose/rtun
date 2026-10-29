@@ -5,6 +5,7 @@ pub mod error;
 pub mod plan;
 pub mod session;
 pub mod setup;
+pub mod split;
 pub mod status;
 
 pub use error::ClientWinError;

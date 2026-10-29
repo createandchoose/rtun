@@ -115,8 +115,14 @@ async fn plan(path: &Path) -> Result<(), ClientWinError> {
     for route in win::route_plan(&plan, &physical) {
         println!("netsh {}", win::route_args("add", &route).join(" "));
     }
-    println!("netsh {}", dns_args(config.dns.server_v4.into()).join(" "));
-    println!("netsh {}", dns_args(config.dns.server_v6.into()).join(" "));
+    let (dns4, dns6) = if config.routing.smart_routing {
+        println!("split DNS: Russian domains and Russian IP answers bypass the tunnel; host routes are learned on demand");
+        ("127.0.0.1".parse().unwrap(), "::1".parse().unwrap())
+    } else {
+        (config.dns.server_v4.into(), config.dns.server_v6.into())
+    };
+    println!("netsh {}", dns_args(dns4).join(" "));
+    println!("netsh {}", dns_args(dns6).join(" "));
     println!("netsh {}", metric_args().join(" "));
     Ok(())
 }

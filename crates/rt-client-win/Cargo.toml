@@ -10,10 +10,13 @@ name = "rtun-win"
 path = "src/main.rs"
 
 [dependencies]
+async-trait.workspace = true
+hickory-proto.workspace = true
 clap.workspace = true
 ipnet.workspace = true
 rand.workspace = true
 rt-proto = { path = "../rt-proto" }
+rt-dns = { path = "../rt-dns" }
 rt-routing = { path = "../rt-routing" }
 rt-transport = { path = "../rt-transport" }
 rt-tunnel = { path = "../rt-tunnel" }

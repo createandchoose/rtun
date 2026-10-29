@@ -108,8 +108,27 @@ async fn session(
 
     // Маршрут до сервера должен быть закреплен за физическим адаптером ДО
     // рукопожатия: иначе пакеты уйдут через чужой VPN (например sing-tun).
-    let mut setup = Setup::new(executor);
-    let outcome = session_inner(config, &addresses, &physical, &mut setup, shutdown, status).await;
+    let split = if config.routing.smart_routing {
+        Some(crate::split::SplitDns::prepare(config, &physical, executor.as_ref()).await?)
+    } else {
+        None
+    };
+    let setup = Arc::new(Setup::new(executor));
+    let mut dns = None;
+    let outcome = session_inner(
+        config,
+        &addresses,
+        &physical,
+        setup.clone(),
+        split,
+        &mut dns,
+        shutdown,
+        status,
+    )
+    .await;
+    if let Some(dns) = dns {
+        dns.shutdown().await;
+    }
     setup.teardown().await;
     outcome
 }
@@ -118,7 +137,9 @@ async fn session_inner(
     config: &ClientConfig,
     addresses: &[SocketAddr],
     physical: &PhysicalRoute,
-    setup: &mut Setup,
+    setup: Arc<Setup>,
+    split: Option<crate::split::SplitDns>,
+    dns: &mut Option<rt_dns::DnsProxyHandle>,
     shutdown: &mut watch::Receiver<bool>,
     status: &watch::Sender<TunnelState>,
 ) -> Result<SessionEnd, ClientWinError> {
@@ -133,7 +154,15 @@ async fn session_inner(
 
     let plan = build_plan(config, addresses, &GeoIpData::default())?;
     let device = open_tun(TUN_NAME, config.device.mtu_obfs)?;
+    if let Some(split) = split {
+        *dns = Some(split.start(setup.clone()).await?);
+    }
     setup.configure(config, &plan, physical).await?;
+    // Cached answers from an earlier connection must pass through split DNS.
+    let mut flush = tokio::process::Command::new("ipconfig");
+    #[cfg(windows)]
+    flush.creation_flags(0x08000000);
+    let _ = flush.arg("/flushdns").output().await;
     info!(interface = TUN_NAME, "routes and DNS installed");
     status.send_replace(TunnelState::Connected {
         endpoint,

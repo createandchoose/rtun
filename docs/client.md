@@ -1,5 +1,28 @@
 # Client installation and usage
 
+## Windows: Russian sites outside the VPN
+
+With `SmartRouting = true` in `.conf` (`routing.smart_routing = true` in TOML),
+the Windows client runs a local UDP/TCP DNS proxy. Russian suffixes from
+`DirectSuffixes`, including `.ru`, `.рф` and `.su`, resolve through the physical
+adapter's DNS. Other names resolve through the tunnel. Before returning an
+answer, the client installs physical host routes for Russian domains and for
+addresses in the Russian GeoIP database. Other addresses keep using the VPN;
+`TunnelOverrideCidrs` takes precedence over automatic bypass.
+
+The country database is downloaded before connecting and cached under
+`%LOCALAPPDATA%\rtun\geoip`, refreshed at the configured interval. If refreshing
+fails, an existing cache is used. If no country database or direct DNS server
+is available, the connection reports the problem rather than silently disabling
+the bypass. Routes learned during the connection are removed on disconnect.
+Native IPv6 is used when the physical adapter has an IPv6 default gateway;
+otherwise Russian AAAA answers are suppressed so applications use direct IPv4.
+
+Domain learning requires system DNS. Applications using their own DoH/DoT,
+private DNS caches or literal IP addresses can bypass DNS-based classification.
+An IP route applies to every site sharing that address. Restart the client and
+reconnect after updating; a running process keeps its previous code.
+
 ## Requirements
 
 - Ubuntu 22.04, 24.04 or newer, x86_64.

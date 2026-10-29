@@ -5,6 +5,7 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+async-trait.workspace = true
 hickory-proto.workspace = true
 ipnet.workspace = true
 rt-proto = { path = "../rt-proto" }

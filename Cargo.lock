@@ -4854,9 +4854,12 @@ dependencies = [
 name = "rt-client-win"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "clap",
+ "hickory-proto",
  "ipnet",
  "rand 0.8.8",
+ "rt-dns",
  "rt-proto",
  "rt-routing",
  "rt-transport",
