@@ -33,6 +33,17 @@ pub struct SessionPaths {
 
 impl Default for SessionPaths {
     fn default() -> Self {
+        if cfg!(windows) {
+            let base = windows_state_dir();
+            return Self {
+                state_file: base.join("run").join("client-state.json"),
+                run_dir: base.join("run"),
+                geoip_dir: base.join("geoip"),
+                resolved_dropin: base.join("unused-resolved.conf"),
+                resolved_marker: base.join("unused-resolved-marker.json"),
+                enable_dns: false,
+            };
+        }
         Self {
             state_file: PathBuf::from("/run/rtun/client-state.json"),
             run_dir: PathBuf::from("/run/rtun"),
@@ -850,11 +861,24 @@ fn spawn_dns_feedback(
     });
 }
 
+/// Per-user state directory on Windows, `%APPDATA%\RTUN`.
+pub fn windows_state_dir() -> PathBuf {
+    std::env::var_os("APPDATA")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from("."))
+        .join("RTUN")
+}
+
 async fn detect_default_route() -> Option<(
     String,
     Option<std::net::Ipv4Addr>,
     Option<std::net::Ipv6Addr>,
 )> {
+    if cfg!(windows) {
+        // On Windows the adapter index travels in the interface slot.
+        let physical = rt_routing::win::detect_physical(&rt_routing::ProcessExecutor).await?;
+        return Some((physical.index.to_string(), physical.gateway, None));
+    }
     let mut interface = None;
     let mut gateway_v4 = None;
     let mut gateway_v6 = None;

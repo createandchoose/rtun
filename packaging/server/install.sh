@@ -34,14 +34,12 @@ if [[ -z "${DOMAIN}" ]]; then
   echo "--domain is required" >&2
   exit 2
 fi
-if [[ -z "${EMAIL}" ]]; then
-  echo "--email is required for Let's Encrypt" >&2
-  exit 2
-fi
+# Email необязателен: без него certbot регистрируется без адреса.
+# Уведомления о сроке действия тогда не придут, продление работает автоматически.
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install -y --no-install-recommends nginx unbound certbot nftables curl ca-certificates
+apt-get install -y --no-install-recommends nginx unbound dns-root-data certbot nftables iproute2 procps curl ca-certificates
 
 if ! id -u rtun >/dev/null 2>&1; then
   useradd --system --no-create-home --shell /usr/sbin/nologin rtun
@@ -84,8 +82,23 @@ if ! grep -q 'include "/etc/nftables.d/\*.nft"' /etc/nftables.conf 2>/dev/null; 
   printf '\ninclude "/etc/nftables.d/*.nft"\n' >>/etc/nftables.conf
 fi
 systemctl enable nftables
-nft -f /etc/nftables.d/rtun.nft
+# Replace only our table in one transaction, so reruns do not append rules.
+FIREWALL_BATCH="$(mktemp)"
+trap 'rm -f "${FIREWALL_BATCH}"' EXIT
+if nft list table inet rtun_base >/dev/null 2>&1; then
+  echo 'delete table inet rtun_base' >"${FIREWALL_BATCH}"
+fi
+cat /etc/nftables.d/rtun.nft >>"${FIREWALL_BATCH}"
+nft --check -f "${FIREWALL_BATCH}"
+nft -f "${FIREWALL_BATCH}"
 
+# With --no-install-recommends Ubuntu may not install dns-root-data. Also,
+# unbound's service helper has not necessarily run before checkconf is called.
+# Seed the writable RFC 5011 anchor from the distro's trusted package first.
+install -d -m 0755 -o unbound -g unbound /var/lib/unbound
+if [[ ! -s /var/lib/unbound/root.key ]]; then
+  install -m 0644 -o unbound -g unbound /usr/share/dns/root.key /var/lib/unbound/root.key
+fi
 rt-ctl unbound-config >/etc/unbound/unbound.conf.d/rtun.conf
 unbound-checkconf
 systemctl enable unbound
@@ -107,11 +120,17 @@ EOF
 ln -sf /etc/nginx/sites-available/rtun /etc/nginx/sites-enabled/rtun
 rm -f /etc/nginx/sites-enabled/default
 nginx -t
-systemctl reload nginx
+systemctl enable nginx
+systemctl restart nginx
 
 if [[ ! -f "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem" ]]; then
-  certbot certonly --webroot -w /var/www/rtun-decoy -d "${DOMAIN}" \
-    --non-interactive --agree-tos --email "${EMAIL}" --keep-until-expiring
+  if [[ -n "${EMAIL}" ]]; then
+    certbot certonly --webroot -w /var/www/rtun-decoy -d "${DOMAIN}" \
+      --non-interactive --agree-tos --email "${EMAIL}" --keep-until-expiring
+  else
+    certbot certonly --webroot -w /var/www/rtun-decoy -d "${DOMAIN}" \
+      --non-interactive --agree-tos --register-unsafely-without-email --keep-until-expiring
+  fi
 fi
 
 sed "s/__DOMAIN__/${DOMAIN}/g" "${ROOT_DIR}/packaging/server/nginx-rtun.conf.template" \
@@ -119,14 +138,39 @@ sed "s/__DOMAIN__/${DOMAIN}/g" "${ROOT_DIR}/packaging/server/nginx-rtun.conf.tem
 nginx -t
 systemctl reload nginx
 
+install -d -m 0755 /etc/letsencrypt/renewal-hooks/deploy
+cat >/etc/letsencrypt/renewal-hooks/deploy/rtun-reload-nginx <<'EOF'
+#!/bin/sh
+set -eu
+nginx -t
+systemctl reload nginx
+EOF
+chmod 0755 /etc/letsencrypt/renewal-hooks/deploy/rtun-reload-nginx
+
 install -m 0644 "${ROOT_DIR}/packaging/server/rtund.service" /etc/systemd/system/rtund.service
 systemctl daemon-reload
 systemctl enable rtund
 systemctl restart rtund
+# Type=simple can report active before the daemon has bound its sockets.
+for attempt in {1..15}; do
+  if (exec 3<>/dev/tcp/127.0.0.1/9443) 2>/dev/null; then
+    break
+  fi
+  if [[ "${attempt}" -eq 15 ]]; then
+    journalctl -u rtund -n 30 --no-pager >&2
+    echo "rtund did not open its WebSocket backend" >&2
+    exit 1
+  fi
+  sleep 1
+done
 
 if [[ -n "${PEER_NAME}" && ! -f "/etc/rtun/peers/${PEER_NAME}.toml" ]]; then
-  rt-ctl add-peer --peers-dir /etc/rtun/peers --name "${PEER_NAME}" --index 2 --server-config /etc/rtun/server.toml
+  runuser -u rtun -- rt-ctl add-peer --peers-dir /etc/rtun/peers --name "${PEER_NAME}" --index 2 --server-config /etc/rtun/server.toml
+  systemctl reload rtund
 fi
+
+systemctl is-active --quiet rtund nginx unbound
+rtund --config /etc/rtun/server.toml --check-config
 
 echo
 echo "RTUN server is installed."
@@ -136,5 +180,6 @@ echo "  obfs UDP:   ${DOMAIN}:443/udp"
 echo "  peers:      /etc/rtun/peers"
 echo
 echo "Add a device with:"
-echo "  rt-ctl add-peer --peers-dir /etc/rtun/peers --name NAME --index N --server-config /etc/rtun/server.toml"
+echo "  runuser -u rtun -- rt-ctl add-peer --peers-dir /etc/rtun/peers --name NAME --index N --server-config /etc/rtun/server.toml"
+echo "  systemctl reload rtund"
 echo "Then create the client config with rt-ctl gen-client."

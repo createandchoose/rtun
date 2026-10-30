@@ -1,7 +1,5 @@
 use crate::{push_event, render as render_window, MainWindow, RuleItem, Shared, LEVEL_ERROR};
-use rt_client_win::preferences::{
-    self, FilterRule, RuleKind, RuleMode, SmartPreferences, TransportChoice,
-};
+use rt_client_win::preferences::{self, FilterRule, RuleKind, RuleMode, SmartPreferences};
 use slint::{ComponentHandle, ModelRc, VecModel};
 use std::{
     hash::{Hash, Hasher},
@@ -11,19 +9,7 @@ use tokio::runtime::Handle;
 
 pub fn render(ui: &MainWindow, prefs: &SmartPreferences) {
     ui.set_rf_enabled(prefs.bypass_russia);
-    ui.set_transport_choice(match prefs.transport {
-        TransportChoice::Auto => 0,
-        TransportChoice::Udp => 1,
-        TransportChoice::Https => 2,
-    });
-    ui.set_transport_caption(
-        match prefs.transport {
-            TransportChoice::Auto => "Авто · UDP / HTTPS",
-            TransportChoice::Udp => "UDP",
-            TransportChoice::Https => "HTTPS",
-        }
-        .into(),
-    );
+    ui.set_transport_caption("obfs-udp".into());
     let rows: Vec<RuleItem> = prefs
         .rules
         .iter()
@@ -303,21 +289,6 @@ pub fn bind(ui: &MainWindow, shared: &Shared, handle: &Handle) {
             }
         }
     });
-    ui.on_transport_changed({
-        let weak = ui.as_weak();
-        let shared = shared.clone();
-        move |choice| {
-            if let Some(ui) = weak.upgrade() {
-                change(&ui, &shared, |prefs| {
-                    prefs.transport = match choice {
-                        1 => TransportChoice::Udp,
-                        2 => TransportChoice::Https,
-                        _ => TransportChoice::Auto,
-                    }
-                });
-            }
-        }
-    });
     ui.on_rule_mode({
         let weak = ui.as_weak();
         let shared = shared.clone();
@@ -364,7 +335,7 @@ pub fn bind(ui: &MainWindow, shared: &Shared, handle: &Handle) {
                                 kind: RuleKind::Site,
                                 name: site.clone(),
                                 target: site,
-                                mode: RuleMode::Direct,
+                                mode: RuleMode::Vpn,
                                 icon: None,
                             },
                         );
@@ -401,7 +372,7 @@ pub fn bind(ui: &MainWindow, shared: &Shared, handle: &Handle) {
                                 .to_string_lossy()
                                 .into_owned(),
                             target: path.to_string_lossy().into_owned(),
-                            mode: RuleMode::Direct,
+                            mode: RuleMode::Vpn,
                             icon: None,
                         },
                     );

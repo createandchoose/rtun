@@ -136,7 +136,9 @@ fn render(ui: &MainWindow, state: &AppState) {
     ui.set_state_title(title.into());
     ui.set_state_detail(detail.into());
     ui.set_endpoint(endpoint.into());
-    if let TunnelState::Connected { endpoint, .. } = &state.tunnel {
+    if let TunnelState::Connected { endpoint, .. } | TunnelState::Handshaking { endpoint } =
+        &state.tunnel
+    {
         if let Some((_, transport)) = endpoint.rsplit_once(" · ") {
             ui.set_transport_caption(transport.into());
         }

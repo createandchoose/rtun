@@ -1,0 +1,17 @@
+[package]
+name = "rtun-manager"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "rtun-manager"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+rt-deploy = { path = "../rt-deploy" }
+rt-proto = { path = "../rt-proto" }
+serde.workspace = true
+toml.workspace = true
+tokio.workspace = true

@@ -22,6 +22,12 @@ pub struct DnsEvent {
     pub ttl: u32,
 }
 
+/// Installs routing decisions before an answer becomes visible to applications.
+#[async_trait::async_trait]
+pub trait ResponseHandler: Send + Sync {
+    async fn prepare(&self, event: &DnsEvent, response: &mut Vec<u8>) -> Result<()>;
+}
+
 #[derive(Debug, Clone)]
 pub struct DnsSettings {
     pub listen: Vec<SocketAddr>,
@@ -81,6 +87,7 @@ pub struct DnsProxy {
     split: SplitPolicy,
     cache: Mutex<DnsCache>,
     feedback: mpsc::Sender<DnsEvent>,
+    response_handler: Option<Arc<dyn ResponseHandler>>,
 }
 
 impl DnsProxy {
@@ -95,11 +102,17 @@ impl DnsProxy {
             split,
             cache: Mutex::new(DnsCache::new(4096)),
             feedback,
+            response_handler: None,
         }
     }
 
     pub fn classify(&self, domain: &str) -> UpstreamClass {
         self.split.classify(domain)
+    }
+
+    pub fn with_response_handler(mut self, handler: Arc<dyn ResponseHandler>) -> Self {
+        self.response_handler = Some(handler);
+        self
     }
 
     pub async fn resolve(&self, query: &[u8]) -> Result<Vec<u8>> {
@@ -119,19 +132,22 @@ impl DnsProxy {
         if upstreams.is_empty() {
             return Err(DnsError::NoUpstream);
         }
-        let response = self.exchange(upstreams, query).await?;
+        let mut response = self.exchange(upstreams, query).await?;
         let (ttl, addresses) = analyze_response(&response)?;
         if !addresses.is_empty() {
-            self.cache
-                .lock()
-                .await
-                .insert(key, response.clone(), ttl, Instant::now());
             let event = DnsEvent {
                 name,
                 addresses,
                 direct_domain: class == UpstreamClass::Direct,
                 ttl,
             };
+            if let Some(handler) = &self.response_handler {
+                handler.prepare(&event, &mut response).await?;
+            }
+            self.cache
+                .lock()
+                .await
+                .insert(key, response.clone(), ttl, Instant::now());
             let _ = self.feedback.try_send(event);
         }
         Ok(response)
@@ -275,11 +291,21 @@ pub async fn spawn(
     settings: DnsSettings,
     feedback: mpsc::Sender<DnsEvent>,
 ) -> Result<DnsProxyHandle> {
-    let proxy = Arc::new(DnsProxy::new(settings.clone(), feedback));
+    spawn_with_handler(settings, feedback, None).await
+}
+
+pub async fn spawn_with_handler(
+    settings: DnsSettings,
+    feedback: mpsc::Sender<DnsEvent>,
+    handler: Option<Arc<dyn ResponseHandler>>,
+) -> Result<DnsProxyHandle> {
+    let mut proxy = DnsProxy::new(settings.clone(), feedback);
+    proxy.response_handler = handler;
+    let proxy = Arc::new(proxy);
     let (shutdown, _) = watch::channel(false);
     let mut tasks = Vec::new();
     let semaphore = Arc::new(Semaphore::new(256));
-
+    let mut listeners = Vec::new();
     for address in &settings.listen {
         let udp = UdpSocket::bind(address)
             .await
@@ -287,6 +313,9 @@ pub async fn spawn(
         let tcp = TcpListener::bind(address)
             .await
             .map_err(|error| DnsError::Config(format!("cannot bind DNS TCP {address}: {error}")))?;
+        listeners.push((udp, tcp));
+    }
+    for (udp, tcp) in listeners {
         let udp = Arc::new(udp);
         let mut shutdown_rx = shutdown.subscribe();
         let proxy_udp = proxy.clone();
@@ -517,6 +546,25 @@ mod tests {
         let failure = servfail(&query("example.ru"));
         let message = Message::from_vec(&failure).unwrap();
         assert_eq!(message.metadata.response_code, ResponseCode::ServFail);
+    }
+
+    #[tokio::test]
+    async fn routing_failure_is_not_cached_or_returned_as_a_successful_answer() {
+        struct Reject;
+        #[async_trait::async_trait]
+        impl ResponseHandler for Reject {
+            async fn prepare(&self, _: &DnsEvent, _: &mut Vec<u8>) -> Result<()> {
+                Err(DnsError::Config("route installation failed".into()))
+            }
+        }
+        let upstream =
+            fake_upstream("127.0.0.1:0".parse().unwrap(), Ipv4Addr::new(5, 5, 5, 5)).await;
+        let address = upstream.local_addr().unwrap();
+        let (tx, _rx) = mpsc::channel(1);
+        let proxy =
+            DnsProxy::new(settings(address, address), tx).with_response_handler(Arc::new(Reject));
+        assert!(proxy.resolve(&query("example.ru")).await.is_err());
+        assert!(proxy.resolve(&query("example.ru")).await.is_err());
     }
 
     #[test]

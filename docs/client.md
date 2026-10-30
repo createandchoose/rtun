@@ -1,7 +1,5 @@
 # Client installation and usage
 
-<<<<<<< Updated upstream
-=======
 ## Windows GUI smart filtering and transport
 
 The Windows GUI now has a **Фильтрация** screen with **Сайты** and
@@ -11,12 +9,20 @@ rules take priority over website rules, which take priority over automatic
 Russian bypass. The **Российские сайты — напрямую** switch is on by default;
 turning it off leaves manual rules intact.
 
-The connection screen offers **Авто**, **UDP** and **HTTPS**. UDP uses RTUN
-obfuscation; HTTPS uses TLS WebSocket. Auto retries with the other transport
-when a handshake or an established connection fails. The active transport is
-shown while connected. Settings apply on the next connection.
+The GUI starts with **obfs-udp** and automatically retries **ws-tls** over
+HTTPS when a transport or tunnel data check fails. A failed fallback retries
+obfs-udp. A working transport stays active until failure or disconnect.
+Manual transport selection remains hidden; old saved choices are ignored.
+Local engine and Windows DNS errors report context and stop instead of
+repeatedly recreating a broken adapter. A stale Wintun create/open failure
+gets one recovery attempt. No unrelated adapters are removed.
+WireGuard can handshake before the Windows TUN is initialized. Health checks
+start only after the engine reports its full startup (bounded to 45 seconds),
+then verify tunnel DNS and native TUN DNS. They repeat every 30 seconds;
+keepalive packets alone do not establish that application traffic works.
+Settings apply on the next connection.
 
-Rules, routing modes and transport selection persist in
+Rules and routing modes persist in
 `%APPDATA%\rtun\smart.json`. Website favicons and executable icons are copied
 to `%APPDATA%\rtun\icons`, so saved icons remain available offline or after
 the executable moves. A neutral fallback is shown when a site has no usable
@@ -30,6 +36,20 @@ WireGuard datagrams travel only over loopback to RTUN's UDP/HTTPS relay;
 the VPS protocol and server configuration are unchanged. Per-session private
 configuration is removed on disconnect. Administrator rights are needed for
 the TUN interface, and `wintun.dll` must be beside the GUI executable.
+
+The stable configuration uses the userspace `gvisor` TUN stack, native adapter
+DNS and IPv4 resolution. Windows strict WFP routing is disabled because the
+RTUN relay and routing engine run in different processes. This configuration
+does not claim strict DNS leak prevention. Country CIDR rules run after DNS
+resolution. The client reports connected only after DNS succeeds through both
+the WireGuard data path and the actual Windows TUN DNS address. UDP receive
+timeouts and transient ICMP errors do not immediately destroy the session;
+engine errors are retained and surfaced in the GUI instead of being discarded.
+
+Run RTUN separately from other active system-wide VPNs. Another TUN client's
+strict Windows DNS filters can block RTUN's adapter DNS even when RTUN's own
+transport is healthy. New manual entries default to **Через VPN**; **Без VPN**
+explicitly bypasses the tunnel and does not bypass provider blocking.
 
 The older native client/CLI behavior below remains available to library and
 CLI users; GUI smart filtering uses the process-aware engine described here.
@@ -57,7 +77,6 @@ private DNS caches or literal IP addresses can bypass DNS-based classification.
 An IP route applies to every site sharing that address. Restart the client and
 reconnect after updating; a running process keeps its previous code.
 
->>>>>>> Stashed changes
 ## Requirements
 
 - Ubuntu 22.04, 24.04 or newer, x86_64.
@@ -287,3 +306,41 @@ Verify `/etc/systemd/resolved.conf.d/rtun.conf` is gone and
 `systemctl status systemd-resolved` is healthy. If the daemon was killed with
 `SIGKILL`, run it once normally and stop it, or delete the drop-in manually and
 restart resolved.
+
+### Diagnosing Windows startup and automatic fallback
+
+Run the ignored `smart_engine::tests::live_windows_tun_session` test as an
+administrator with `RTUN_LIVE_CONFIG` pointing to a local client profile.
+It creates the actual TUN, checks HTTPS egress, then signals shutdown and waits
+for route cleanup before asserting. `RTUN_NATIVE_SCENARIO=direct` verifies a
+manual website bypass. `RTUN_NATIVE_SCENARIO=fallback` changes only an in-memory
+UDP obfuscation header to simulate blocked UDP, verifies automatic ws-tls,
+and verifies that an application VPN rule overrides a direct website rule.
+Saved user preferences and server settings are not changed by these scenarios.
+
+A WireGuard handshake is not an engine readiness signal: sing-box starts its
+endpoints before its inbound adapters. Killing it during Wintun device creation
+can leave a temporary stale device (create reports already exists while open
+reports Element not found). The GUI now allows startup/unwinding to complete
+and retains the engine's diagnostic output, with private keys redacted.
+
+Validation on Windows, 2026-10-31 (real TUN, existing other VPN left running):
+
+- Primary obfs-udp: native DNS and HTTPS egress matched the configured VPS.
+- Manual website Direct rule: HTTPS egress changed to the physical connection.
+- Simulated UDP loss: automatic ws-tls connected; an application VPN rule
+  overrode the website Direct rule, with HTTPS egress matching the VPS.
+  One transient HTTPS connection timeout was retried successfully.
+- Stability: session remained connected across a 35-second hold; both initial
+  and periodic tunnel/native DNS checks passed, followed by HTTPS verification.
+- After shutdown no RTUN TUN adapter or RTUN-owned engine process remained.
+
+The engine runs with a private hidden console. The embedded Windows launcher
+sends CTRL_BREAK to that console on shutdown and waits for Wintun cleanup;
+forced termination is only a bounded fallback. The stop pipe is held outside
+Tokio Child because polling Child::wait closes Child-owned stdin.
+
+Upstream lifecycle and Windows shutdown references:
+- https://github.com/SagerNet/sing-box/blob/v1.14.4/box.go
+- https://github.com/SagerNet/sing-box/issues/3806
+- https://go.dev/src/os/signal/signal_windows_test.go

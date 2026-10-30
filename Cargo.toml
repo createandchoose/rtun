@@ -10,12 +10,16 @@ members = [
     "crates/rt-server",
     "crates/rt-client-gui",
     "crates/rt-ctl",
+    "crates/rt-deploy",
+    "crates/rtun-manager",
+    "crates/rt-client-win",
+    "crates/rt-client-win-gui",
 ]
 
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.80"
+rust-version = "1.89"
 license = "MIT"
 authors = ["RTUN contributors"]
 

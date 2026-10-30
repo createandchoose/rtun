@@ -36,12 +36,12 @@ async fn main() -> std::process::ExitCode {
     }
 
     let (shutdown_tx, shutdown_rx) = watch::channel(false);
-    let (reload_tx, reload_rx) = mpsc::channel(4);
+    let (_reload_tx, reload_rx) = mpsc::channel(4);
     let paths = ServerPaths {
         state_file: args.run_dir.join("server-state.json"),
         run_dir: args.run_dir,
     };
-    let handle = tokio::spawn(async move { run(config, paths, shutdown_rx, reload_rx).await });
+    let mut handle = tokio::spawn(async move { run(config, paths, shutdown_rx, reload_rx).await });
 
     #[cfg(unix)]
     {
@@ -51,20 +51,30 @@ async fn main() -> std::process::ExitCode {
         let mut hup = signal(SignalKind::hangup()).expect("SIGHUP handler");
         loop {
             tokio::select! {
+                result = &mut handle => return task_exit(result),
                 _ = term.recv() => break,
                 _ = int.recv() => break,
                 _ = hup.recv() => {
-                    let _ = reload_tx.send(()).await;
+                    let _ = _reload_tx.send(()).await;
                 }
             }
         }
     }
     #[cfg(not(unix))]
     {
-        let _ = tokio::signal::ctrl_c().await;
+        tokio::select! {
+            result = &mut handle => return task_exit(result),
+            _ = tokio::signal::ctrl_c() => {}
+        }
     }
     let _ = shutdown_tx.send(true);
-    match handle.await {
+    task_exit(handle.await)
+}
+
+fn task_exit(
+    result: Result<rt_server::Result<()>, tokio::task::JoinError>,
+) -> std::process::ExitCode {
+    match result {
         Ok(Ok(())) => std::process::ExitCode::SUCCESS,
         Ok(Err(error)) => {
             eprintln!("rtund failed: {error}");

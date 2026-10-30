@@ -115,12 +115,10 @@ export component MainWindow inherits Window {
     in-out property <[EventItem]> events: [];
     in-out property <[RuleItem]> rules: [];
     in-out property <bool> rf-enabled: true;
-    in-out property <int> transport-choice: 0;
-    in-out property <string> transport-caption: "Авто";
+    in-out property <string> transport-caption: "obfs-udp";
     in-out property <string> site-input;
     in-out property <int> filter-tab: 0;
     callback rf-changed(bool);
-    callback transport-changed(int);
     callback rule-mode(int);
     callback rule-remove(int);
     callback add-site(string);
@@ -372,12 +370,6 @@ export component MainWindow inherits Window {
                 }
             }
 
-            HorizontalLayout {
-                spacing: 8px;
-                Chip { label: "Авто"; selected: root.transport-choice == 0; clicked => { root.transport-changed(0); } }
-                Chip { label: "UDP"; selected: root.transport-choice == 1; clicked => { root.transport-changed(1); } }
-                Chip { label: "HTTPS"; selected: root.transport-choice == 2; clicked => { root.transport-changed(2); } }
-            }
 
             Rectangle {
                 height: 68px;
@@ -463,7 +455,7 @@ export component MainWindow inherits Window {
                                     Text { text: rule.name; color: #ededed; font-size: 13px; overflow: elide; }
                                     Text { text: rule.target; color: #777777; font-size: 10px; overflow: elide; }
                                 }
-                                Chip { width: 104px; label: rule.direct ? "Напрямую" : "Через VPN"; selected: !rule.direct; clicked => { root.rule-mode(rule.index); } }
+                                Chip { width: 104px; label: rule.direct ? "Без VPN" : "Через VPN"; selected: !rule.direct; clicked => { root.rule-mode(rule.index); } }
                                 Rectangle {
                                     width: 22px;
                                     Text { text: "×"; font-size: 22px; color: #808080; vertical-alignment: center; horizontal-alignment: center; }
@@ -491,7 +483,7 @@ export component MainWindow inherits Window {
                     }
                 }
             }
-            Text { text: "Правила приложений важнее сайтов и автоматики. Изменения применятся при следующем подключении."; color: #777777; font-size: 11px; wrap: word-wrap; }
+            Text { text: "«Без VPN» обходит туннель. Для заблокированных сайтов выбирайте «Через VPN». Изменения — при следующем подключении."; color: #777777; font-size: 11px; wrap: word-wrap; }
         }
 
         if root.screen == 1 : VerticalLayout {
