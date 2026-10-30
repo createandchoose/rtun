@@ -4016,6 +4016,47 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< Updated upstream
+=======
+name = "rt-client-win"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "clap",
+ "hickory-proto",
+ "ipnet",
+ "rand 0.8.8",
+ "rt-dns",
+ "rt-proto",
+ "rt-routing",
+ "rt-transport",
+ "rt-tunnel",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "rt-client-win-gui"
+version = "0.1.0"
+dependencies = [
+ "rfd",
+ "rt-client-win",
+ "rt-deploy",
+ "rt-routing",
+ "serde_json",
+ "slint",
+ "slint-build",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+>>>>>>> Stashed changes
 name = "rt-clientd"
 version = "0.1.0"
 dependencies = [

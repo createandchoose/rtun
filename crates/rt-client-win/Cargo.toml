@@ -1,0 +1,28 @@
+[package]
+name = "rt-client-win"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "rtun-win"
+path = "src/main.rs"
+
+[dependencies]
+async-trait.workspace = true
+hickory-proto.workspace = true
+clap.workspace = true
+ipnet.workspace = true
+rand.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+rt-proto = { path = "../rt-proto" }
+rt-dns = { path = "../rt-dns" }
+rt-routing = { path = "../rt-routing" }
+rt-transport = { path = "../rt-transport" }
+rt-tunnel = { path = "../rt-tunnel" }
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true

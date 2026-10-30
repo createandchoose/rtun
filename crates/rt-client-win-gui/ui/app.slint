@@ -1,0 +1,679 @@
+// Палитра взята из landing/index.html: чёрный фон, светлый текст, синий акцент.
+export struct EventItem {
+    text: string,
+    level: int,
+}
+
+export struct RuleItem {
+    index: int, name: string, target: string, icon: image, application: bool, direct: bool,
+}
+
+component Chip inherits Rectangle {
+    in property <string> label;
+    in property <bool> selected: false;
+    callback clicked();
+    height: 36px;
+    border-radius: 12px;
+    border-width: 1px;
+    border-color: selected ? #2864a6 : #242424;
+    background: selected ? #102541 : #101010;
+    Text { text: root.label; color: root.selected ? #86bcff : #b3b3b3; font-size: 13px; horizontal-alignment: center; vertical-alignment: center; }
+    TouchArea { clicked => { root.clicked(); } }
+}
+
+component InfoTile inherits Rectangle {
+    in property <string> label;
+    in property <string> value;
+    background: #0a0a0a;
+    border-radius: 14px;
+    border-width: 1px;
+    border-color: #1f1f1f;
+
+    VerticalLayout {
+        padding: 14px;
+        spacing: 4px;
+        Text {
+            text: root.label;
+            color: #8f8f8f;
+            font-size: 12px;
+        }
+        Text {
+            text: root.value;
+            color: #ededed;
+            font-size: 15px;
+            font-weight: 600;
+            overflow: elide;
+        }
+    }
+}
+
+component Field inherits Rectangle {
+    in property <string> label;
+    in property <string> hint;
+    in property <bool> secret: false;
+    in-out property <string> value;
+    height: 62px;
+    background: #0a0a0a;
+    border-radius: 14px;
+    border-width: 1px;
+    border-color: #1f1f1f;
+
+    VerticalLayout {
+        padding: 12px;
+        padding-left: 14px;
+        padding-right: 14px;
+        spacing: 2px;
+        Text {
+            text: root.label;
+            color: #8f8f8f;
+            font-size: 12px;
+        }
+        Rectangle {
+            height: 22px;
+            Text {
+                text: root.hint;
+                color: #4d4d4d;
+                font-size: 15px;
+                horizontal-alignment: left;
+                vertical-alignment: center;
+                width: parent.width;
+                height: parent.height;
+                visible: root.value == "";
+                overflow: elide;
+            }
+            TextInput {
+                text <=> root.value;
+                color: #ededed;
+                font-size: 15px;
+                width: parent.width;
+                input-type: root.secret ? InputType.password : InputType.text;
+            }
+        }
+    }
+}
+
+export component MainWindow inherits Window {
+    title: "RTUN";
+    background: #000000;
+    preferred-width: 460px;
+    preferred-height: 920px;
+    min-width: 420px;
+    min-height: 880px;
+    default-font-family: "Segoe UI";
+
+    // 0 — выключено, 1 — подключаемся, 2 — подключено, 3 — переподключение
+    in-out property <int> state-kind: 0;
+    in-out property <string> state-title: "Не подключено";
+    in-out property <string> state-detail: "";
+    in-out property <string> config-name: "Конфиг не выбран";
+    in-out property <bool> has-config: false;
+    in-out property <string> endpoint: "—";
+    in-out property <string> tunnel-ip: "—";
+    in-out property <string> uptime: "—";
+    in-out property <bool> busy: false;
+    in-out property <bool> elevated: true;
+    in-out property <[EventItem]> events: [];
+    in-out property <[RuleItem]> rules: [];
+    in-out property <bool> rf-enabled: true;
+    in-out property <int> transport-choice: 0;
+    in-out property <string> transport-caption: "Авто";
+    in-out property <string> site-input;
+    in-out property <int> filter-tab: 0;
+    callback rf-changed(bool);
+    callback transport-changed(int);
+    callback rule-mode(int);
+    callback rule-remove(int);
+    callback add-site(string);
+    callback add-application();
+
+    // 0 — подключение, 1 — установка сервера
+    in-out property <int> screen: 0;
+    in-out property <string> srv-host;
+    in-out property <string> srv-user: "root";
+    in-out property <bool> srv-use-key: false;
+    in-out property <string> srv-password;
+    in-out property <string> srv-key;
+    in-out property <string> srv-domain;
+    in-out property <string> srv-email;
+    in-out property <string> srv-peer: "client1";
+    in-out property <bool> deploy-busy: false;
+    in-out property <string> deploy-status: "";
+
+    callback pick-config();
+    callback toggle-connection();
+    callback relaunch-admin();
+    callback pick-key();
+    callback deploy-start();
+
+    property <string> button-label: busy ? "Отключаем…"
+        : state-kind == 2 ? "Отключиться"
+        : state-kind == 0 && !has-config ? "Выбрать конфиг"
+        : state-kind == 0 ? "Подключиться"
+        : "Отмена";
+
+    property <color> status-color: state-kind == 2 ? #0070f3
+        : state-kind == 3 ? #ff6b6b
+        : state-kind == 1 ? #a1a1a1
+        : #3a3a3a;
+
+    VerticalLayout {
+        padding: 24px;
+        spacing: 16px;
+
+        HorizontalLayout {
+            spacing: 12px;
+            Text {
+                text: "RTUN";
+                color: #ededed;
+                font-size: 20px;
+                font-weight: 700;
+                vertical-alignment: center;
+            }
+            Rectangle { }
+            Rectangle {
+                height: 28px;
+                border-radius: 14px;
+                background: #111111;
+                border-width: 1px;
+                border-color: #1f1f1f;
+                HorizontalLayout {
+                    padding-left: 12px;
+                    padding-right: 14px;
+                    spacing: 8px;
+                    alignment: center;
+                    Rectangle {
+                        width: 8px;
+                        height: 28px;
+                        Rectangle {
+                            x: 0px;
+                            y: (parent.height - self.height) / 2;
+                            width: 8px;
+                            height: 8px;
+                            border-radius: 4px;
+                            background: root.status-color;
+                        }
+                    }
+                    Text {
+                        text: root.state-kind == 2 ? "Подключено"
+                            : root.state-kind == 1 ? "Подключаемся"
+                            : root.state-kind == 3 ? "Переподключение"
+                            : "Отключено";
+                        color: #a1a1a1;
+                        font-size: 13px;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+        // Переключатель разделов
+        Rectangle {
+            height: 42px;
+            border-radius: 21px;
+            background: #0a0a0a;
+            border-width: 1px;
+            border-color: #1f1f1f;
+            HorizontalLayout {
+                padding: 4px;
+                spacing: 4px;
+                Rectangle {
+                    border-radius: 17px;
+                    background: root.screen == 0 ? #ffffff : transparent;
+                    Text {
+                        text: "Подключение";
+                        color: root.screen == 0 ? #000000 : #a1a1a1;
+                        font-size: 14px;
+                        font-weight: 600;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                    TouchArea {
+                        clicked => { root.screen = 0; }
+                    }
+                }
+                Rectangle {
+                    border-radius: 17px;
+                    background: root.screen == 1 ? #ffffff : transparent;
+                    Text {
+                        text: "Сервер";
+                        color: root.screen == 1 ? #000000 : #a1a1a1;
+                        font-size: 14px;
+                        font-weight: 600;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                    TouchArea {
+                        clicked => { root.screen = 1; }
+                    }
+                }
+                Rectangle {
+                    border-radius: 17px;
+                    background: root.screen == 2 ? #ffffff : transparent;
+                    Text { text: "Фильтрация"; color: root.screen == 2 ? #000000 : #a1a1a1; font-size: 14px; font-weight: 600; horizontal-alignment: center; vertical-alignment: center; }
+                    TouchArea { clicked => { root.screen = 2; } }
+                }
+            }
+        }
+
+        if root.screen == 0 : VerticalLayout {
+            spacing: 16px;
+
+            if !root.elevated : Rectangle {
+                background: #14110a;
+                border-radius: 12px;
+                border-width: 1px;
+                border-color: #3d2f0d;
+                HorizontalLayout {
+                    padding: 14px;
+                    spacing: 12px;
+                    VerticalLayout {
+                        spacing: 2px;
+                        Text {
+                            text: "Нужны права администратора";
+                            color: #f5c451;
+                            font-size: 14px;
+                            font-weight: 600;
+                        }
+                        Text {
+                            text: "Без них RTUN не может настроить сеть Windows.";
+                            color: #a1a1a1;
+                            font-size: 13px;
+                            wrap: word-wrap;
+                        }
+                    }
+                    Rectangle {
+                        width: 150px;
+                        height: 36px;
+                        border-radius: 18px;
+                        background: #f5c451;
+                        Text {
+                            text: "Перезапустить";
+                            color: #000000;
+                            font-size: 13px;
+                            font-weight: 600;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                        TouchArea {
+                            clicked => { root.relaunch-admin(); }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                background: #0a0a0a;
+                border-radius: 20px;
+                border-width: 1px;
+                border-color: #1f1f1f;
+                VerticalLayout {
+                    padding: 28px;
+                    spacing: 14px;
+                    alignment: center;
+                    Text {
+                        text: root.state-title;
+                        color: #ededed;
+                        font-size: 28px;
+                        font-weight: 700;
+                        horizontal-alignment: center;
+                    }
+                    Text {
+                        text: root.state-detail;
+                        color: #a1a1a1;
+                        font-size: 14px;
+                        wrap: word-wrap;
+                        horizontal-alignment: center;
+                    }
+                    Rectangle {
+                        height: 52px;
+                        border-radius: 26px;
+                        background: root.busy ? #1a1a1a
+                            : root.state-kind == 2 ? #1a1a1a
+                            : #ffffff;
+                        Text {
+                            text: root.button-label;
+                            color: root.busy ? #8f8f8f
+                                : root.state-kind == 2 ? #ededed
+                                : #000000;
+                            font-size: 15px;
+                            font-weight: 600;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                        TouchArea {
+                            enabled: !root.busy;
+                            clicked => { root.toggle-connection(); }
+                        }
+                    }
+                }
+            }
+
+            GridLayout {
+                spacing: 12px;
+                Row {
+                    InfoTile {
+                        label: "Сервер";
+                        value: root.endpoint;
+                    }
+                    InfoTile {
+                        label: "IP туннеля";
+                        value: root.tunnel-ip;
+                    }
+                }
+                Row {
+                    InfoTile {
+                        label: "Время работы";
+                        value: root.uptime;
+                    }
+                    InfoTile {
+                        label: "Транспорт";
+                        value: root.transport-caption;
+                    }
+                }
+            }
+
+            HorizontalLayout {
+                spacing: 8px;
+                Chip { label: "Авто"; selected: root.transport-choice == 0; clicked => { root.transport-changed(0); } }
+                Chip { label: "UDP"; selected: root.transport-choice == 1; clicked => { root.transport-changed(1); } }
+                Chip { label: "HTTPS"; selected: root.transport-choice == 2; clicked => { root.transport-changed(2); } }
+            }
+
+            Rectangle {
+                height: 68px;
+                background: #0a0a0a;
+                border-radius: 14px;
+                border-width: 1px;
+                border-color: #1f1f1f;
+                HorizontalLayout {
+                    padding: 14px;
+                    spacing: 12px;
+                    VerticalLayout {
+                        spacing: 2px;
+                        alignment: center;
+                        horizontal-stretch: 1;
+                        Text {
+                            text: "Конфиг";
+                            color: #8f8f8f;
+                            font-size: 12px;
+                        }
+                        Text {
+                            text: root.config-name;
+                            color: #ededed;
+                            font-size: 14px;
+                            overflow: elide;
+                        }
+                    }
+                    Rectangle {
+                        width: 130px;
+                        height: 36px;
+                        border-radius: 18px;
+                        background: #111111;
+                        border-width: 1px;
+                        border-color: #1f1f1f;
+                        Text {
+                            text: "Выбрать…";
+                            color: root.state-kind == 0 ? #ededed : #5a5a5a;
+                            font-size: 13px;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                        TouchArea {
+                            enabled: root.state-kind == 0;
+                            clicked => { root.pick-config(); }
+                        }
+                    }
+                }
+            }
+        }
+
+        if root.screen == 2 : VerticalLayout {
+            spacing: 12px;
+            Text { text: "Умная фильтрация"; color: #ededed; font-size: 23px; font-weight: 700; }
+            Text { text: "Выберите, как подключаться к сайтам и приложениям."; color: #929292; font-size: 13px; wrap: word-wrap; }
+            HorizontalLayout {
+                spacing: 8px;
+                Chip { label: "Сайты"; selected: root.filter-tab == 0; clicked => { root.filter-tab = 0; } }
+                Chip { label: "Приложения"; selected: root.filter-tab == 1; clicked => { root.filter-tab = 1; } }
+            }
+            if root.filter-tab == 0 : HorizontalLayout {
+                spacing: 8px;
+                Field { label: "Домен сайта"; hint: "example.com"; value <=> root.site-input; horizontal-stretch: 1; }
+                Chip { label: "Добавить"; width: 86px; height: 62px; clicked => { root.add-site(root.site-input); } }
+            }
+            if root.filter-tab == 1 : Chip { label: "+ Выбрать приложение (.exe)"; height: 48px; clicked => { root.add-application(); } }
+            Rectangle {
+                height: 200px; background: #0a0a0a; border-radius: 14px; border-width: 1px; border-color: #1f1f1f;
+                Flickable {
+                    width: parent.width; height: parent.height;
+                    content-width: self.width; content-height: rule-list.preferred-height + 16px;
+                    rule-list := VerticalLayout {
+                        x: 8px; y: 8px; width: parent.width - 16px; spacing: 6px;
+                        for rule in root.rules : Rectangle {
+                            visible: rule.application == (root.filter-tab == 1);
+                            height: rule.application == (root.filter-tab == 1) ? 64px : 0px; background: #111111; border-radius: 10px;
+                            HorizontalLayout {
+                                padding: 10px; spacing: 8px;
+                                Rectangle {
+                                    width: 36px; height: 36px; background: #f0f0f0; border-radius: 9px;
+                                    Image { x: 4px; y: 4px; source: rule.icon; width: 28px; height: 28px; image-fit: contain; }
+                                }
+                                VerticalLayout {
+                                    horizontal-stretch: 1; spacing: 3px; alignment: center;
+                                    Text { text: rule.name; color: #ededed; font-size: 13px; overflow: elide; }
+                                    Text { text: rule.target; color: #777777; font-size: 10px; overflow: elide; }
+                                }
+                                Chip { width: 104px; label: rule.direct ? "Напрямую" : "Через VPN"; selected: !rule.direct; clicked => { root.rule-mode(rule.index); } }
+                                Rectangle {
+                                    width: 22px;
+                                    Text { text: "×"; font-size: 22px; color: #808080; vertical-alignment: center; horizontal-alignment: center; }
+                                    TouchArea { clicked => { root.rule-remove(rule.index); } }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Text { text: "Автоматическая фильтрация"; color: #ededed; font-size: 16px; font-weight: 600; }
+            Rectangle {
+                height: 72px; background: #0a0a0a; border-radius: 14px; border-width: 1px; border-color: #1f1f1f;
+                HorizontalLayout {
+                    padding: 14px; spacing: 12px;
+                    VerticalLayout {
+                        horizontal-stretch: 1; spacing: 4px; alignment: center;
+                        Text { text: "Российские сайты — напрямую"; color: #ededed; font-size: 13px; font-weight: 600; }
+                        Text { text: ".ru, .рф и адреса из базы РФ"; color: #808080; font-size: 11px; }
+                    }
+                    Rectangle {
+                        width: 44px; height: 26px; border-radius: 13px; background: root.rf-enabled ? #0070f3 : #333333;
+                        Rectangle { x: root.rf-enabled ? 21px : 3px; y: 3px; width: 20px; height: 20px; border-radius: 10px; background: #ffffff; animate x { duration: 120ms; } }
+                        TouchArea { clicked => { root.rf-changed(!root.rf-enabled); } }
+                    }
+                }
+            }
+            Text { text: "Правила приложений важнее сайтов и автоматики. Изменения применятся при следующем подключении."; color: #777777; font-size: 11px; wrap: word-wrap; }
+        }
+
+        if root.screen == 1 : VerticalLayout {
+            spacing: 12px;
+
+            Text {
+                text: "Сервер на вашем VPS";
+                color: #ededed;
+                font-size: 20px;
+                font-weight: 700;
+            }
+            Text {
+                text: "Укажите адрес и доступ по SSH. RTUN сам установит сервер и подготовит конфиг для подключения.";
+                color: #a1a1a1;
+                font-size: 13px;
+                wrap: word-wrap;
+            }
+
+            Field {
+                label: "IP-адрес или домен сервера";
+                hint: "185.129.85.6";
+                value <=> root.srv-host;
+            }
+            Field {
+                label: "Пользователь SSH";
+                hint: "root";
+                value <=> root.srv-user;
+            }
+
+            // Способ входа: пароль (как в AmneziaVPN) или ключ
+            HorizontalLayout {
+                spacing: 8px;
+                Rectangle {
+                    height: 34px;
+                    border-radius: 17px;
+                    background: root.srv-use-key ? #0a0a0a : #ffffff;
+                    border-width: 1px;
+                    border-color: #1f1f1f;
+                    Text {
+                        text: "Пароль";
+                        color: root.srv-use-key ? #a1a1a1 : #000000;
+                        font-size: 13px;
+                        font-weight: 600;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                    TouchArea {
+                        clicked => { root.srv-use-key = false; }
+                    }
+                }
+                Rectangle {
+                    height: 34px;
+                    border-radius: 17px;
+                    background: root.srv-use-key ? #ffffff : #0a0a0a;
+                    border-width: 1px;
+                    border-color: #1f1f1f;
+                    Text {
+                        text: "SSH-ключ";
+                        color: root.srv-use-key ? #000000 : #a1a1a1;
+                        font-size: 13px;
+                        font-weight: 600;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                    TouchArea {
+                        clicked => { root.srv-use-key = true; }
+                    }
+                }
+            }
+
+            if !root.srv-use-key : Field {
+                label: "Пароль root (не сохраняется)";
+                hint: "Пароль от сервера";
+                secret: true;
+                value <=> root.srv-password;
+            }
+            if root.srv-use-key : HorizontalLayout {
+                spacing: 10px;
+                Field {
+                    horizontal-stretch: 1;
+                    label: "Путь к приватному ключу";
+                    hint: "C:\\Users\\вы\\.ssh\\id_ed25519";
+                    value <=> root.srv-key;
+                }
+                Rectangle {
+                    width: 110px;
+                    height: 62px;
+                    Rectangle {
+                        y: (parent.height - self.height) / 2;
+                        width: parent.width;
+                        height: 36px;
+                        border-radius: 18px;
+                        background: #111111;
+                        border-width: 1px;
+                        border-color: #1f1f1f;
+                        Text {
+                            text: "Выбрать…";
+                            color: #ededed;
+                            font-size: 13px;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                        TouchArea {
+                            clicked => { root.pick-key(); }
+                        }
+                    }
+                }
+            }
+
+            Field {
+                label: "Домен для сертификата";
+                hint: "vpn.example.com (A-запись на IP сервера)";
+                value <=> root.srv-domain;
+            }
+            Field {
+                label: "Email (необязательно)";
+                hint: "для уведомлений Let's Encrypt";
+                value <=> root.srv-email;
+            }
+            Field {
+                label: "Имя устройства";
+                hint: "client1";
+                value <=> root.srv-peer;
+            }
+
+            Rectangle {
+                height: 52px;
+                border-radius: 26px;
+                background: root.deploy-busy ? #1a1a1a : #ffffff;
+                Text {
+                    text: root.deploy-busy ? "Устанавливаем…" : "Установить сервер";
+                    color: root.deploy-busy ? #8f8f8f : #000000;
+                    font-size: 15px;
+                    font-weight: 600;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+                TouchArea {
+                    enabled: !root.deploy-busy;
+                    clicked => { root.deploy-start(); }
+                }
+            }
+            if root.deploy-status != "" : Text {
+                text: root.deploy-status;
+                color: #a1a1a1;
+                font-size: 13px;
+                wrap: word-wrap;
+            }
+        }
+
+        Text {
+            text: "Журнал";
+            color: #8f8f8f;
+            font-size: 12px;
+        }
+        Rectangle {
+            vertical-stretch: 1;
+            min-height: 120px;
+            background: #0a0a0a;
+            border-radius: 14px;
+            border-width: 1px;
+            border-color: #1f1f1f;
+            Flickable {
+                width: parent.width;
+                height: parent.height;
+                content-width: self.width;
+                content-height: log-list.preferred-height + 28px;
+                log-list := VerticalLayout {
+                    x: 14px;
+                    y: 14px;
+                    width: parent.width - 28px;
+                    spacing: 8px;
+                    for item in root.events : Text {
+                        text: item.text;
+                        color: item.level == 1 ? #ff6b6b
+                            : item.level == 2 ? #5aa9ff
+                            : #a1a1a1;
+                        font-size: 13px;
+                        wrap: word-wrap;
+                    }
+                }
+            }
+        }
+    }
+}

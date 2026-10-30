@@ -1,5 +1,63 @@
 # Client installation and usage
 
+<<<<<<< Updated upstream
+=======
+## Windows GUI smart filtering and transport
+
+The Windows GUI now has a **Фильтрация** screen with **Сайты** and
+**Приложения** lists. Add a domain or select an application's `.exe`, then
+click its routing chip to choose **Напрямую** or **Через VPN**. Application
+rules take priority over website rules, which take priority over automatic
+Russian bypass. The **Российские сайты — напрямую** switch is on by default;
+turning it off leaves manual rules intact.
+
+The connection screen offers **Авто**, **UDP** and **HTTPS**. UDP uses RTUN
+obfuscation; HTTPS uses TLS WebSocket. Auto retries with the other transport
+when a handshake or an established connection fails. The active transport is
+shown while connected. Settings apply on the next connection.
+
+Rules, routing modes and transport selection persist in
+`%APPDATA%\rtun\smart.json`. Website favicons and executable icons are copied
+to `%APPDATA%\rtun\icons`, so saved icons remain available offline or after
+the executable moves. A neutral fallback is shown when a site has no usable
+favicon or its icon cannot be downloaded.
+
+For process isolation, the GUI uses sing-box 1.14.4 as a local TUN router.
+The official Windows x64 archive is downloaded on first use and its pinned
+SHA-256 is verified by `packaging/windows/install-smart-engine.ps1`.
+The engine lives under `%LOCALAPPDATA%\rtun\engine\1.14.4`.
+WireGuard datagrams travel only over loopback to RTUN's UDP/HTTPS relay;
+the VPS protocol and server configuration are unchanged. Per-session private
+configuration is removed on disconnect. Administrator rights are needed for
+the TUN interface, and `wintun.dll` must be beside the GUI executable.
+
+The older native client/CLI behavior below remains available to library and
+CLI users; GUI smart filtering uses the process-aware engine described here.
+
+## Windows: Russian sites outside the VPN
+
+With `SmartRouting = true` in `.conf` (`routing.smart_routing = true` in TOML),
+the Windows client runs a local UDP/TCP DNS proxy. Russian suffixes from
+`DirectSuffixes`, including `.ru`, `.рф` and `.su`, resolve through the physical
+adapter's DNS. Other names resolve through the tunnel. Before returning an
+answer, the client installs physical host routes for Russian domains and for
+addresses in the Russian GeoIP database. Other addresses keep using the VPN;
+`TunnelOverrideCidrs` takes precedence over automatic bypass.
+
+The country database is downloaded before connecting and cached under
+`%LOCALAPPDATA%\rtun\geoip`, refreshed at the configured interval. If refreshing
+fails, an existing cache is used. If no country database or direct DNS server
+is available, the connection reports the problem rather than silently disabling
+the bypass. Routes learned during the connection are removed on disconnect.
+Native IPv6 is used when the physical adapter has an IPv6 default gateway;
+otherwise Russian AAAA answers are suppressed so applications use direct IPv4.
+
+Domain learning requires system DNS. Applications using their own DoH/DoT,
+private DNS caches or literal IP addresses can bypass DNS-based classification.
+An IP route applies to every site sharing that address. Restart the client and
+reconnect after updating; a running process keeps its previous code.
+
+>>>>>>> Stashed changes
 ## Requirements
 
 - Ubuntu 22.04, 24.04 or newer, x86_64.
